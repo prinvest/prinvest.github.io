@@ -1,0 +1,2367 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>ПРАЙМ ИНВЕСТ — Калькулятор возможностей</title>
+<meta content="Интерактивный калькулятор ПРАЙМ ИНВЕСТ для самостоятельной оценки сценариев." name="description"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<style>
+    :root {
+      --bg: #F3EFE6;
+      --panel: #FFFDF8;
+      --text: #0B0F19;
+      --muted: #374151;
+      --line: #C9BFAE;
+      --accent: #8A6A2F;
+      --accent-dark: #5F461C;
+      --soft: rgba(138, 106, 47, .09);
+      --grid: rgba(11, 15, 25, .08);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, "Helvetica Neue", sans-serif;
+      color: var(--text);
+      background:
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+        linear-gradient(180deg, var(--grid) 1px, transparent 1px),
+        var(--bg);
+      background-size: 64px 64px;
+      letter-spacing: -0.015em;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    button, input {
+      font: inherit;
+      color: inherit;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(243, 239, 230, .94);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar__inner {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      height: 54px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 16px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .topbar__center {
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 11px;
+      letter-spacing: .12em;
+    }
+
+    .topbar__right {
+      text-align: right;
+      color: var(--accent-dark);
+    }
+
+    .section {
+      padding: 42px 0;
+    }
+
+    .hero {
+      min-height: calc(100svh - 54px);
+      display: grid;
+      grid-template-columns: .88fr 1.12fr;
+      gap: 34px;
+      align-items: center;
+    }
+
+    .kicker {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--accent-dark);
+      margin-bottom: 14px;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      font-size: clamp(34px, 4.5vw, 66px);
+      line-height: .96;
+      letter-spacing: -0.07em;
+      font-weight: 600;
+      max-width: 720px;
+    }
+
+    .lead {
+      margin-top: 18px;
+      max-width: 460px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+      font-weight: 500;
+    }
+
+    .text-link {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 28px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid var(--accent-dark);
+      color: var(--accent-dark);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .report-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 42px rgba(11, 15, 25, .06);
+    }
+
+    .monitor {
+      padding: 20px;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .panel-head span:last-child {
+      color: var(--accent-dark);
+      white-space: nowrap;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .metric {
+      padding: 15px 14px;
+      border-right: 1px solid var(--line);
+      min-width: 0;
+    }
+
+    .metric:last-child { border-right: 0; }
+
+    .metric__label {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      white-space: nowrap;
+    }
+
+    .metric__value {
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 600;
+      letter-spacing: -0.06em;
+    }
+
+    .chart {
+      position: relative;
+      height: 210px;
+      border-bottom: 1px solid var(--line);
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(201,191,174,.42) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(201,191,174,.42) 1px, transparent 1px);
+      background-size: 50px 42px;
+    }
+
+    .chart svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .chart .axis {
+      position: absolute;
+      left: 14px;
+      bottom: 12px;
+      right: 14px;
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .monitor-copy {
+      padding: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 500;
+      margin: 0 0 0 24px;
+      max-width: 640px;
+      min-width: 0;
+      -webkit-box-flex: 1;
+      -webkit-flex: 1 1 auto;
+      flex: 1 1 auto;
+    }
+
+    .monitor-links {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      margin-top: 16px;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+    }
+
+    .monitor-links .stat-button {
+      -webkit-box-flex: 0;
+      -webkit-flex: 0 0 auto;
+      flex: 0 0 auto;
+    }
+
+    .calculator-section {
+      padding-top: 34px;
+      scroll-margin-top: 66px;
+    }
+
+    .section-title {
+      font-size: clamp(24px, 3vw, 38px);
+      line-height: 1.05;
+      letter-spacing: -0.06em;
+      font-weight: 600;
+      margin-bottom: 18px;
+    }
+
+    .calculator {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 41% 59%;
+      min-height: 430px;
+    }
+
+    .calc-left {
+      border-right: 1px solid var(--line);
+      padding: 18px;
+    }
+
+    .calc-right {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 16px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      height: 40px;
+      border: 1px solid var(--line);
+      margin-bottom: 16px;
+      background: #F8F4EC;
+    }
+
+    .tab {
+      height: 38px;
+      border: 0;
+      border-right: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 0;
+      line-height: 38px;
+      transition: background-color .18s ease, color .18s ease;
+    }
+
+    .tab:last-child { border-right: 0; }
+
+    .tab.active {
+      background: var(--accent-dark);
+      color: #FFFDF8;
+    }
+
+    .calc-panel { display: none; }
+    .calc-panel.active { display: block; }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      margin: -4px 0 12px;
+      font-weight: 500;
+    }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      height: 44px;
+      border: 1px solid var(--line);
+      background: #FFFDF8;
+      padding: 0 12px;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      outline: none;
+      border-radius: 0;
+    }
+
+    input:focus { border-color: var(--accent-dark); }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 6px;
+    }
+
+
+    .chip {
+      height: 28px;
+      min-width: 44px;
+      padding: 0 9px;
+      border: 1px solid var(--line);
+      background: #F8F4EC;
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color .16s ease, color .16s ease, border-color .16s ease;
+    }
+
+    .chip:hover,
+    .chip.active {
+      background: var(--soft);
+      border-color: var(--accent-dark);
+      color: var(--accent-dark);
+    }
+
+    .result-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .result-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: baseline;
+      gap: 18px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .result-row:first-child { border-top: 1px solid var(--line); }
+
+    .result-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .result-value {
+      font-size: clamp(24px, 4vw, 46px);
+      font-weight: 600;
+      line-height: .95;
+      letter-spacing: -0.07em;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .result-value.small {
+      font-size: clamp(20px, 3vw, 34px);
+    }
+
+    .result-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+
+
+
+    .intro-section {
+      padding-top: 56px;
+      padding-bottom: 16px;
+    }
+
+    .intro-copy {
+      max-width: 760px;
+    }
+
+    .calc-intro--standalone {
+      margin-top: 26px;
+      max-width: 560px;
+    }
+
+    .statistics-section {
+      scroll-margin-top: 66px;
+    }
+
+    .stat-intro-text {
+      max-width: 620px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 500;
+      margin: 0 0 16px;
+    }
+
+    .telegram {
+      padding: 34px 0 18px;
+    }
+
+    .telegram-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 26px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .telegram h2 {
+      font-size: clamp(24px, 3.4vw, 42px);
+      line-height: 1.04;
+      letter-spacing: -0.06em;
+      font-weight: 600;
+    }
+
+    .telegram p {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .facts-line {
+      margin-top: 14px;
+      color: var(--text);
+      font-size: 12px;
+      line-height: 1.4;
+      font-weight: 600;
+    }
+
+    .tg-box {
+      min-width: 230px;
+      text-align: right;
+    }
+
+    .tg-handle {
+      color: var(--accent-dark);
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 18px;
+      border: 1px solid var(--accent-dark);
+      color: var(--panel);
+      background: var(--accent-dark);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .hero-button {
+      margin-top: 26px;
+      min-height: 46px;
+      padding: 0 24px;
+    }
+
+    .stat-button {
+      min-height: 42px;
+      padding: 0 18px;
+    }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      padding: 16px 0 20px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .footer span:first-child { color: var(--text); }
+
+
+
+    .faq-section {
+      scroll-margin-top: 66px;
+    }
+
+    .faq-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+    }
+
+    .faq-item {
+      padding: 20px 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .faq-item:last-child { border-bottom: 0; }
+
+    .faq-question {
+      font-size: 15px;
+      line-height: 1.2;
+      letter-spacing: -0.035em;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .faq-answer {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.48;
+      font-weight: 500;
+      max-width: 860px;
+    }
+
+    .faq-answer p + p { margin-top: 9px; }
+
+
+    .hero-calculator {
+      min-height: calc(100svh - 54px);
+      grid-template-columns: .72fr 1.28fr;
+      align-items: center;
+    }
+
+    .hero-copy {
+      align-self: center;
+    }
+
+    .hero-calc {
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero-calc .section-title {
+      margin-bottom: 0;
+    }
+
+    .calc-intro {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 18px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 13px;
+    }
+
+    .calc-intro .kicker {
+      margin-bottom: 0;
+      white-space: nowrap;
+    }
+
+    .stats-section {
+      scroll-margin-top: 66px;
+    }
+
+    .stats-section .report-panel {
+      width: 100%;
+    }
+
+    .stats-section .chart {
+      height: 300px;
+    }
+
+    .faq-item {
+      padding: 0;
+    }
+
+    .faq-question {
+      list-style: none;
+      cursor: pointer;
+      position: relative;
+      display: block;
+      padding: 20px 58px 20px 22px;
+      margin-bottom: 0;
+      user-select: none;
+    }
+
+    .faq-question::-webkit-details-marker { display: none; }
+
+    .faq-question::after {
+      content: '+';
+      position: absolute;
+      right: 22px;
+      top: 50%;
+      -webkit-transform: translateY(-50%);
+      transform: translateY(-50%);
+      color: var(--accent-dark);
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 500;
+      letter-spacing: -0.04em;
+    }
+
+    .faq-item[open] .faq-question::after {
+      content: '–';
+    }
+
+    .faq-answer {
+      padding: 0 22px 20px;
+    }
+
+    
+
+    .landing-hero {
+      min-height: calc(100svh - 54px);
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 34px;
+      align-items: center;
+      padding-top: 64px;
+      padding-bottom: 44px;
+    }
+
+    .landing-hero__copy {
+      max-width: 760px;
+    }
+
+    .landing-lead {
+      max-width: 620px;
+    }
+
+    .hero-facts {
+      display: grid;
+      grid-template-columns: 1fr;
+      align-self: center;
+    }
+
+    .hero-fact {
+      padding: 24px 26px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-fact:last-child { border-bottom: 0; }
+
+    .hero-fact__label {
+      display: block;
+      color: var(--accent-dark);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .hero-fact__value {
+      display: block;
+      font-size: clamp(22px, 2.6vw, 34px);
+      line-height: 1.05;
+      letter-spacing: -0.06em;
+      font-weight: 600;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 1fr minmax(260px, 440px);
+      gap: 28px;
+      align-items: end;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 18px;
+    }
+
+    .section-head .kicker {
+      margin-bottom: 10px;
+    }
+
+    .section-head .section-title {
+      margin-bottom: 0;
+    }
+
+    .section-head__text {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .calculator-section {
+      padding-top: 36px;
+    }
+
+    .statistics-section {
+      padding-top: 50px;
+    }
+
+    .statistics-section .report-panel {
+      width: 100%;
+    }
+
+    .statistics-section .chart {
+      height: 300px;
+    }
+
+    .faq-section {
+      padding-top: 48px;
+    }
+
+    .faq-head {
+      align-items: start;
+    }
+
+
+    @media (min-width: 901px) {
+      .statistics-head {
+        grid-template-columns: 1fr;
+      }
+
+      .statistics-head .section-title {
+        white-space: nowrap;
+      }
+
+      .faq-head {
+        align-items: end;
+      }
+    }
+
+    @media (max-width: 900px) {
+
+
+      .landing-hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        padding: 42px 0 24px;
+      }
+
+      .section-head {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        align-items: start;
+      }
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        padding: 28px 0 18px;
+      }
+
+      .intro-section {
+        padding-top: 34px;
+        padding-bottom: 10px;
+      }
+
+      .calculator {
+        grid-template-columns: 1fr;
+      }
+
+      .calc-left {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .telegram-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-calculator {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .calc-intro {
+        display: block;
+      }
+
+      .calc-intro .kicker {
+        margin-bottom: 10px;
+      }
+
+      .stats-section .chart {
+        height: 150px;
+      }
+
+
+      .tg-box { text-align: left; }
+    }
+
+    @media (max-width: 640px) {
+
+
+      .landing-hero {
+        padding-top: 28px;
+      }
+
+      .hero-fact {
+        padding: 18px;
+      }
+
+      .hero-fact__value {
+        font-size: 24px;
+      }
+
+      .section-head {
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+      }
+
+      .section-head__text {
+        font-size: 12px;
+      }
+      .topbar {
+        position: static;
+        top: auto;
+        backdrop-filter: none;
+      }
+
+      .page, .topbar__inner {
+        width: min(100% - 20px, 1180px);
+      }
+
+      .topbar__inner {
+        height: 48px;
+        grid-template-columns: 1fr auto;
+      }
+
+      .topbar__center { display: none; }
+
+      .section { padding: 24px 0; }
+
+      .intro-section {
+        padding-top: 24px;
+        padding-bottom: 4px;
+      }
+
+      .calc-intro--standalone {
+        margin-top: 18px;
+      }
+
+      .stat-intro-text {
+        font-size: 12px;
+        margin-bottom: 12px;
+      }
+
+      .hero {
+        padding-top: 18px;
+      }
+
+      h1 {
+        font-size: clamp(30px, 8.4vw, 36px);
+        line-height: 1.02;
+        letter-spacing: -0.055em;
+      }
+
+      .lead {
+        margin-top: 14px;
+        font-size: 14px;
+      }
+
+      .text-link { margin-top: 20px; }
+
+      .monitor { padding: 12px; }
+
+      .monitor-links {
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -webkit-flex-direction: column;
+        flex-direction: column;
+        -webkit-box-align: start;
+        -webkit-align-items: flex-start;
+        align-items: flex-start;
+      }
+
+      .monitor-copy {
+        margin: 12px 0 0;
+      }
+
+      .panel-head {
+        font-size: 10px;
+        gap: 8px;
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .metric {
+        padding: 11px 10px;
+      }
+
+      .metric:nth-child(2) { border-right: 0; }
+      .metric:nth-child(1), .metric:nth-child(2) { border-bottom: 1px solid var(--line); }
+
+      .metric__value { font-size: 20px; }
+      .chart { height: 150px; }
+
+      .calculator-section {
+        padding-top: 18px;
+        scroll-margin-top: 12px;
+      }
+      .section-title { margin-bottom: 12px; }
+
+      .calculator { min-height: 0; }
+
+      .calc-left, .calc-right { padding: 12px; }
+
+      .tabs {
+        height: 36px;
+        margin-bottom: 12px;
+      }
+
+      .tab {
+        height: 34px;
+        line-height: 34px;
+        font-size: 10px;
+      }
+
+      .field { margin-bottom: 9px; }
+
+      label {
+        font-size: 10px;
+        margin-bottom: 5px;
+      }
+
+      input {
+        height: 38px;
+        font-size: 16px;
+      }
+
+      .chip {
+        height: 26px;
+        min-width: 39px;
+        padding: 0 7px;
+        font-size: 10px;
+      }
+
+      .result-row {
+        padding: 10px 0;
+      }
+
+      .result-label { font-size: 10px; }
+      .result-value { font-size: 28px; }
+      .result-value.small { font-size: 23px; }
+
+  
+
+    .intro-section {
+      padding-top: 56px;
+      padding-bottom: 16px;
+    }
+
+    .intro-copy {
+      max-width: 760px;
+    }
+
+    .calc-intro--standalone {
+      margin-top: 26px;
+      max-width: 560px;
+    }
+
+    .statistics-section {
+      scroll-margin-top: 66px;
+    }
+
+    .stat-intro-text {
+      max-width: 620px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 500;
+      margin: 0 0 16px;
+    }
+
+    .telegram { padding-top: 18px; }
+
+      .telegram-panel { padding: 18px; }
+
+      .telegram h2 { font-size: 25px; }
+      .facts-line { font-size: 11px; }
+
+      .footer {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 14px 0 14px;
+        font-size: 10px;
+        letter-spacing: .055em;
+        white-space: nowrap;
+      }
+
+      .footer span {
+        white-space: nowrap;
+        flex: 0 0 auto;
+      }
+
+      .footer span:first-child {
+        font-size: 10px;
+        letter-spacing: .055em;
+      }
+
+      .footer span:last-child {
+        font-size: 10px;
+        letter-spacing: .045em;
+      }
+
+      .faq-item {
+        padding: 0;
+      }
+
+      .faq-question {
+        font-size: 14px;
+        padding: 16px 48px 16px 14px;
+      }
+
+      .faq-question::after {
+        right: 14px;
+      }
+
+      .faq-answer {
+        font-size: 12px;
+        padding: 0 14px 16px;
+      }
+
+    }
+  
+
+    /* Variant 2: calculator as the main hero */
+    .calc-hero {
+      min-height: calc(100svh - 54px);
+      display: block;
+      padding-top: 56px;
+      padding-bottom: 34px;
+    }
+
+    .calc-hero__head {
+      max-width: 900px;
+      padding-bottom: 22px;
+    }
+
+    .calc-hero__head .lead {
+      max-width: 660px;
+      margin-top: 16px;
+    }
+
+    .calc-hero__subhead {
+      display: grid;
+      grid-template-columns: 1fr minmax(260px, 430px);
+      gap: 28px;
+      align-items: end;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+      margin: 8px 0 18px;
+    }
+
+    .calc-hero__subhead .section-title {
+      margin-bottom: 0;
+    }
+
+    .calc-hero .calculator {
+      width: 100%;
+      box-shadow: 0 18px 42px rgba(11, 15, 25, .06);
+    }
+
+    .calculator-section.variant2-source {
+      padding-top: 0;
+    }
+
+    @media (max-width: 900px) {
+      .calc-hero {
+        min-height: auto;
+        padding-top: 34px;
+      }
+      .calc-hero__subhead {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+    }
+
+    @media (min-width: 641px) and (max-width: 1100px) {
+      .calc-hero__head {
+        max-width: 700px;
+      }
+
+      .calc-hero__head h1 {
+        max-width: 700px;
+        font-size: 38px;
+        line-height: 1.02;
+        letter-spacing: -0.055em;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .calc-hero {
+        min-height: auto;
+        padding-top: 22px;
+        padding-bottom: 12px;
+      }
+      .calc-hero__head {
+        padding-bottom: 16px;
+      }
+      .calc-hero__subhead {
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .statistics-section {
+        padding-top: 18px;
+      }
+    }
+
+    @media (max-width: 640px) and (orientation: portrait) {
+      .calc-hero {
+        min-height: auto;
+      }
+      .statistics-section {
+        padding-top: 16px;
+      }
+    }
+
+    .calc-hero__head h1 {
+      max-width: 820px;
+      margin-bottom: 0;
+    }
+
+
+    .institutional-calc {
+      display: grid;
+      grid-template-columns: 42% 58%;
+      min-height: 0;
+    }
+
+    .institutional-calc .calc-left,
+    .institutional-calc .calc-right { min-width: 0; }
+
+    .source-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--line);
+      background: #F8F4EC;
+      margin-bottom: 16px;
+    }
+
+    .source-strip--single {
+      grid-template-columns: 1fr;
+    }
+
+    .source-item {
+      padding: 12px 12px;
+      border-right: 1px solid var(--line);
+    }
+
+    .source-item:last-child { border-right: 0; }
+
+    .source-strip--single .source-item { border-right: 0; }
+
+    .source-label {
+      display: block;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      white-space: nowrap;
+    }
+
+    .source-value {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.05em;
+      white-space: nowrap;
+    }
+
+    .calc-action {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid var(--accent-dark);
+      background: var(--accent-dark);
+      color: var(--panel);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    .calc-action:disabled {
+      opacity: .72;
+      cursor: wait;
+    }
+
+    .risk-card {
+      border: 1px solid var(--line);
+      background: #F8F4EC;
+      padding: 16px;
+      margin-top: 14px;
+    }
+
+    .risk-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent-dark);
+      margin-bottom: 10px;
+    }
+
+    .risk-comment {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 500;
+    }
+
+    .risk-comment + .risk-comment { margin-top: 10px; }
+    .risk-comment p + p { margin-top: 9px; }
+
+    .risk-guidance {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: 18px;
+    }
+
+
+    .risk-guidance__lead {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 500;
+      margin: -4px 0 14px;
+      max-width: 860px;
+    }
+
+    .risk-guidance__grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .risk-guidance__item {
+      border: 1px solid var(--line);
+      background: #F8F4EC;
+      padding: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 500;
+    }
+
+    .risk-guidance__item strong {
+      display: block;
+      color: var(--text);
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .risk-guidance__note {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      color: var(--accent-dark);
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 600;
+    }
+
+    .status-line {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .status-line.ok { color: var(--accent-dark); }
+    .status-line.err { color: #7A1F1F; }
+
+    .status-soft { color: var(--accent-dark); }
+    .status-watch { color: #8A6A2F; }
+    .status-alert { color: #8A4F2F; }
+    .status-critical { color: #7A1F1F; }
+    .status-empty { color: var(--muted); }
+
+    #recoveryValue.status-critical,
+    #recoveryValue.status-alert {
+      font-size: clamp(14px, 1.5vw, 22px);
+      line-height: 1.05;
+      white-space: nowrap;
+      max-width: none;
+    }
+
+
+    @media (max-width: 900px) {
+      .risk-guidance__grid { grid-template-columns: 1fr; }
+      .institutional-calc { grid-template-columns: 1fr; }
+      .source-strip { grid-template-columns: repeat(2, 1fr); }
+      .source-strip.source-strip--single { grid-template-columns: 1fr; }
+      .source-item:nth-child(2) { border-right: 0; }
+      .source-item:nth-child(1), .source-item:nth-child(2) { border-bottom: 1px solid var(--line); }
+    }
+
+    @media (max-width: 640px) {
+      .source-strip { grid-template-columns: 1fr; }
+      .source-item { border-right: 0; border-bottom: 1px solid var(--line); }
+      .source-item:last-child { border-bottom: 0; }
+    }
+
+
+    @media (max-width: 640px) {
+      .result-row {
+        grid-template-columns: 1fr;
+        align-items: start;
+        gap: 8px;
+      }
+
+      .result-value,
+      .result-value.small {
+        width: 100%;
+        max-width: 100%;
+        text-align: right;
+        white-space: normal;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .result-value {
+        font-size: clamp(24px, 7.2vw, 30px);
+        line-height: 1;
+      }
+
+      .result-value.small {
+        font-size: clamp(22px, 6.6vw, 28px);
+        line-height: 1;
+      }
+    }
+
+
+    /* iPhone portrait/landscape compatibility */
+    @media (max-width: 900px) {
+      .risk-guidance__item {
+        min-height: 0;
+        height: auto;
+      }
+    }
+
+    @media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+      .topbar {
+        position: static;
+        top: auto;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+
+      .page,
+      .topbar__inner {
+        width: min(100% - 24px, 1180px);
+      }
+
+      .calc-hero {
+        padding-top: 20px;
+        padding-bottom: 18px;
+      }
+
+      .calc-hero__head {
+        padding-bottom: 12px;
+      }
+
+      .calc-hero__head h1 {
+        font-size: 34px;
+        line-height: 1;
+        max-width: 720px;
+      }
+
+      .calc-hero__subhead {
+        gap: 18px;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+      }
+
+      .section-title {
+        font-size: 26px;
+      }
+
+      .calculator {
+        grid-template-columns: 42% 58%;
+      }
+
+      .calc-left {
+        border-right: 1px solid var(--line);
+        border-bottom: 0;
+      }
+
+      .calc-left,
+      .calc-right {
+        padding: 14px;
+      }
+
+      .result-row {
+        padding: 10px 0;
+      }
+
+      .result-label {
+        font-size: 10px;
+      }
+
+      .result-value {
+        font-size: 30px;
+      }
+
+      .result-value.small {
+        font-size: 23px;
+      }
+
+      .risk-guidance {
+        padding: 14px;
+      }
+
+      .risk-guidance__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .risk-guidance__item {
+        padding: 12px;
+      }
+    }
+
+
+    .topbar__right-wrap {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .language-switcher {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      flex: 0 0 auto;
+    }
+
+    .language-button {
+      border: 0;
+      background: transparent;
+      min-width: 34px;
+      height: 28px;
+      padding: 0 8px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      cursor: pointer;
+    }
+
+    .language-button + .language-button { border-left: 1px solid var(--line); }
+    .language-button.active { background: var(--accent-dark); color: var(--panel); }
+
+    @media (max-width: 640px) {
+      .topbar__right-wrap { gap: 7px; }
+      .topbar__right-wrap .topbar__right { display: none; }
+      .language-button { min-width: 31px; height: 26px; padding: 0 6px; }
+    }
+
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="topbar__inner">
+<div>ПРАЙМ ИНВЕСТ</div>
+<div class="topbar__center">КАЛЬКУЛЯТОР ВОЗМОЖНОСТЕЙ</div>
+<div class="topbar__right-wrap"><a class="topbar__right" href="https://t.me/primeinvest777" rel="noopener" target="_blank">@primeinvest777</a><div class="language-switcher" aria-label="Language"><button class="language-button active" type="button" data-language="ru">RU</button><button class="language-button" type="button" data-language="en">EN</button></div></div>
+</div>
+</header>
+<main class="page"><section aria-label="Калькулятор возможностей" class="calc-hero section">
+<div class="calc-hero__head">
+<h1>СКОЛЬКО МОГУТ ЗАРАБАТЫВАТЬ ВАШИ ДЕНЬГИ?</h1>
+</div>
+<div class="calc-hero__subhead">
+  <div><h2 class="section-title">РАССЧИТАЙТЕ СВОЙ СЦЕНАРИЙ</h2></div>
+  <p class="section-head__text" id="scenarioSubhead">Расчёт строится по зафиксированному среднемесячному показателю и показывает концентрацию суммы участия относительно капитала.</p>
+</div>
+<div class="calculator institutional-calc">
+  <div class="calc-left">
+    <div class="tabs" aria-label="Сценарии расчёта">
+      <button class="tab active" type="button" data-tab="investor">ИНВЕСТОР</button>
+      <button class="tab" type="button" data-tab="partner">ПАРТНЁР</button>
+      <button class="tab" type="button" data-tab="goal">ЦЕЛЬ</button>
+    </div>
+    <div class="calc-panel active" id="investorPanel">
+      <p class="hint">Укажите свои цифры — калькулятор покажет плановый результат и поможет понять, насколько такой сценарий вам подходит.</p>
+      <div class="field">
+        <label for="freeCapital">Свободный инвестиционный капитал, $</label>
+        <input id="freeCapital" type="number" min="0" step="100" value="10000" data-calc="risk">
+        <div class="chips" data-target="freeCapital"><button class="chip">1000</button><button class="chip">3000</button><button class="chip active">10000</button><button class="chip">30000</button><button class="chip">100000</button></div>
+      </div>
+      <div class="field">
+        <label for="participationAmount">Сумма участия, $</label>
+        <input id="participationAmount" type="number" min="0" step="100" value="1000" data-calc="risk">
+        <div class="chips" data-target="participationAmount"><button class="chip">500</button><button class="chip active">1000</button><button class="chip">2000</button><button class="chip">3000</button><button class="chip">10000</button></div>
+      </div>
+      <div class="field">
+        <label for="monthlyIncome">Регулярный доход в месяц, $</label>
+        <input id="monthlyIncome" type="number" min="0" step="100" value="2000" data-calc="risk">
+        <div class="chips" data-target="monthlyIncome"><button class="chip">500</button><button class="chip">1000</button><button class="chip active">2000</button><button class="chip">3000</button><button class="chip">5000</button></div>
+      </div>
+      <div class="field">
+        <label for="monthlyExpenses">Обязательные расходы в месяц, $</label>
+        <input id="monthlyExpenses" type="number" min="0" step="100" value="1000" data-calc="risk">
+        <div class="chips" data-target="monthlyExpenses"><button class="chip">500</button><button class="chip active">1000</button><button class="chip">2000</button><button class="chip">3000</button><button class="chip">5000</button></div>
+      </div>
+      <div class="field">
+        <label for="monthlyContribution">Плановое пополнение в месяц, $</label>
+        <input id="monthlyContribution" type="number" min="0" step="100" value="0" data-calc="risk">
+        <div class="chips" data-target="monthlyContribution"><button class="chip active">0</button><button class="chip">100</button><button class="chip">300</button><button class="chip">500</button><button class="chip">1000</button></div>
+      </div>
+      <div class="field">
+        <label for="scenarioMonths">Срок, месяцев</label>
+        <input id="scenarioMonths" type="number" min="1" step="1" value="12" data-calc="risk">
+        <div class="chips" data-target="scenarioMonths"><button class="chip">6</button><button class="chip active">12</button><button class="chip">24</button><button class="chip">36</button><button class="chip">60</button></div>
+      </div>
+    </div>
+    <div class="calc-panel" id="partnerPanel">
+      <p class="hint">Укажите количество партнёров и средний депозит, чтобы увидеть общий депозит и потенциальный диапазон начислений.</p>
+      <div class="field">
+        <label for="partnerCount">Количество партнёров</label>
+        <input id="partnerCount" type="number" min="0" step="1" value="10">
+        <div class="chips" data-target="partnerCount"><button class="chip">1</button><button class="chip">3</button><button class="chip">5</button><button class="chip active">10</button><button class="chip">20</button><button class="chip">50</button><button class="chip">100</button></div>
+      </div>
+      <div class="field">
+        <label for="partnerCapital">Средний депозит, $</label>
+        <input id="partnerCapital" type="number" min="0" step="100" value="1000">
+        <div class="chips" data-target="partnerCapital"><button class="chip">100</button><button class="chip">300</button><button class="chip">500</button><button class="chip active">1000</button><button class="chip">5000</button><button class="chip">10000</button></div>
+      </div>
+    </div>
+    <div class="calc-panel" id="goalPanel">
+      <p class="hint">Укажите желаемый доход в месяц. Сайт рассчитает, какой капитал математически нужен при зафиксированном среднемесячном показателе.</p>
+      <div class="field">
+        <label for="targetIncome">Желаемый доход в месяц, $</label>
+        <input id="targetIncome" type="number" min="0" step="100" value="1000">
+        <div class="chips" data-target="targetIncome"><button class="chip">100</button><button class="chip">300</button><button class="chip">500</button><button class="chip active">1000</button><button class="chip">3000</button><button class="chip">5000</button></div>
+      </div>
+    </div>
+  </div>
+  <div class="calc-right">
+    <div class="status-line" id="monitoringStatus">Среднемесячный показатель для расчёта: 4,14%. Зафиксирован вручную по состоянию на 02.08.2026.</div>
+    <div class="result-grid">
+      <div class="result-row"><span class="result-label" id="resultLabel1">Доля участия от свободного капитала</span><span class="result-value small" id="concentrationValue">—</span></div>
+      <div class="result-row"><span class="result-label" id="resultLabel2">Срок восстановления суммы</span><span class="result-value small" id="recoveryValue">—</span></div>
+      <div class="result-row"><span class="result-label" id="resultLabel3">Итоговый капитал по модели</span><span class="result-value" id="scenarioFinal">—</span></div>
+      <div class="result-row"><span class="result-label" id="resultLabel4">Модельный результат</span><span class="result-value small" id="scenarioProfit">—</span></div>
+      <div class="result-row"><span class="result-label" id="resultLabel5">Уровень концентрации</span><span class="result-value small" id="riskLevel">—</span></div>
+      <div class="result-row"><span class="result-label" id="resultLabel6">Финансовая подушка</span><span class="result-value small" id="cushionValue">—</span></div>
+      <div class="result-row"><span class="result-label" id="resultLabel7">Оценка</span><span class="result-value small" id="riskValue">—</span></div>
+    </div>
+    <div class="risk-card" id="scenarioReviewCard">
+      <div class="risk-title">Разбор сценария</div>
+      <div class="risk-comment" id="scenarioReview"></div>
+    </div>
+  </div>
+</div>
+<div class="risk-guidance" id="concentrationGuidance" aria-label="Как читать уровень концентрации">
+  <div class="risk-title">Как читать уровень концентрации</div>
+  <p class="risk-guidance__lead">Шкала намеренно консервативная: в институциональном подходе одна стратегия не должна занимать слишком большую долю свободного капитала.</p>
+  <div class="risk-guidance__grid">
+    <div class="risk-guidance__item"><strong>До 5% — низкий уровень</strong>Сумма участия занимает небольшую долю свободного капитала. В институциональном подходе это ближе к тестовому формату: можно проверить механику участия, не делая результат системы критичным для всего капитала.</div>
+    <div class="risk-guidance__item"><strong>5–10% — умеренный уровень</strong>Сумма уже имеет значение, но остаётся в пределах аккуратного участия. Такой диапазон позволяет оценить сценарий на реальных цифрах и сохранить основную часть капитала вне одного направления.</div>
+    <div class="risk-guidance__item"><strong>10–20% — повышенный уровень</strong>Сумма занимает заметную долю свободного капитала. В институциональной логике это зона повышенного внимания: сценарий лучше рассматривать поэтапно и не усиливать без понимания механики и результата.</div>
+    <div class="risk-guidance__item"><strong>Более 20% — критический уровень</strong>Значительная часть свободного капитала направляется в один сценарий. Такой уровень усиливает зависимость от результата одного направления, поэтому более взвешенный подход — снизить сумму участия или распределять капитал между разными решениями.</div>
+  </div>
+</div>
+<div class="risk-guidance" id="riskGuidance" aria-label="Как читать результат оценки">
+  <div class="risk-title">Как читать результат оценки</div>
+  <p class="risk-guidance__lead">Итоговая оценка учитывает не только долю участия, но и свободный денежный поток, срок восстановления суммы и нагрузку плановых пополнений.</p>
+  <div class="risk-guidance__grid">
+    <div class="risk-guidance__item"><strong>Низкий риск</strong>Подходит для спокойной проверки механики участия. Сумма не создаёт заметной нагрузки на капитал и позволяет посмотреть, как работает счёт, копирование, пополнение, вывод и контроль результата.</div>
+    <div class="risk-guidance__item"><strong>Умеренный риск</strong>Можно рассматривать как рабочий сценарий. Сумма уже имеет значение, но остаётся в управляемых рамках относительно капитала, доходов и свободного денежного потока.</div>
+    <div class="risk-guidance__item"><strong>Повышенный риск</strong>Лучше рассматривать поэтапно. Такой сценарий требует большей дисциплины: разумнее снизить стартовую сумму, проверить механику меньшим объёмом и только потом увеличивать участие.</div>
+    <div class="risk-guidance__item"><strong>Высокий / критический риск</strong>Сценарий требует осторожности. На старте лучше снизить нагрузку, выбрать меньшую сумму участия или вернуться к более умеренному варианту расчёта.</div>
+  </div>
+</div>
+</section><section aria-label="Публичная статистика" class="statistics-section section"><div class="section-head statistics-head">
+<div>
+<h2 class="section-title">ПРОВЕРКА ЧЕРЕЗ ПУБЛИЧНЫЙ МОНИТОРИНГ</h2>
+</div>
+</div>
+<div class="report-panel monitor">
+<div class="panel-head">
+<span>ПУБЛИЧНАЯ СТАТИСТИКА</span>
+<span>LIVE MONITORING</span>
+</div>
+<div aria-label="Показатели мониторинга" class="metrics">
+<div class="metric">
+<span class="metric__label">Начало</span>
+<span class="metric__value">09.03.25</span>
+</div>
+<div class="metric">
+<span class="metric__label">Сделок</span>
+<span class="metric__value">1000+</span>
+</div>
+<div class="metric">
+<span class="metric__label">Год</span>
+<span class="metric__value">+82.69%</span>
+</div>
+<div class="metric">
+<span class="metric__label">Формат</span>
+<span class="metric__value">Public</span>
+</div>
+</div>
+<div class="monitor-links">
+<a class="button stat-button" href="https://www.myfxbook.com/members/Alien987/manticore1/11405960" rel="noopener" target="_blank">ПОСМОТРЕТЬ СТАТИСТИКУ →</a>
+<p class="monitor-copy">Счёт отражает работу системы и её результаты, а не общий подключённый капитал.</p>
+</div>
+</div>
+</section><section aria-label="FAQ Прайм Инвест" class="faq-section section" id="faq">
+<div class="section-head faq-head">
+<div>
+<div class="kicker">FAQ</div>
+<h2 class="section-title">Вопросы и ответы</h2>
+</div>
+<p class="section-head__text">Ключевые вопросы по системе, рискам, деньгам участников, партнёрскому направлению и формату подключения.</p>
+</div>
+<div class="faq-panel">
+<details class="faq-item"><summary class="faq-question">1. Что такое Прайм Инвест?</summary><div class="faq-answer">
+<p>Прайм Инвест — это система работы с капиталом, которая объединяет команду трейдеров, копирование сделок на личные счета участников и партнёрское направление.</p>
+<p>Участник может использовать систему в двух форматах: для создания личного капитала или для развития партнёрского дохода.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">2. Прайм Инвест — это инвестиционный фонд?</summary><div class="faq-answer">
+<p>Нет.</p>
+<p>Прайм Инвест не является инвестиционным фондом, управляющей компанией, брокером или инвестиционной платформой.</p>
+<p>Мы не принимаем деньги участников, не храним их и не управляем ими напрямую.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">3. Как участник зарабатывает на своём капитале?</summary><div class="faq-answer">
+<p>Участник открывает личный счёт у брокера, пополняет его и подключает копирование сделок.</p>
+<p>После подключения сделки трейдера автоматически копируются на счёт участника.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">4. Где находятся деньги участника?</summary><div class="faq-answer">
+<p>Деньги участника находятся на его личном счёте у брокера.</p>
+<p>Участник самостоятельно пополняет счёт, отслеживает баланс и операции, а также самостоятельно оформляет вывод средств через личный кабинет брокера.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">5. Что такое брокер и брокерская инфраструктура?</summary><div class="faq-answer">
+<p>Брокер — это компания, через которую участник открывает торговый счёт, пополняет его, выводит средства и подключает копирование сделок.</p>
+<p>Брокерская инфраструктура — это личный кабинет участника, торговый счёт, пополнение, вывод средств, история операций, копирование сделок и начисления по партнёрской программе.</p>
+<p>Именно через брокера проходят все финансовые и технические операции. Мы не создаём отдельный внутренний баланс, не принимаем деньги участников и не заменяем брокера.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">6. Прайм Инвест принимает деньги клиентов?</summary><div class="faq-answer">
+<p>Нет.</p>
+<p>Мы не принимаем деньги на карты, личные счета, криптокошельки или внутренние балансы.</p>
+<p>Все финансовые операции проходят через брокера и личный кабинет участника.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">7. Нужно ли самому разбираться в трейдинге?</summary><div class="faq-answer">
+<p>Нет, для подключения не требуется самостоятельно торговать или анализировать рынок.</p>
+<p>Но важно понимать базовые вещи: где находится счёт, как работает копирование, какие есть риски и как отслеживать результат.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">8. Кто торгует?</summary><div class="faq-answer">
+<p>В основе системы — работа команды трейдеров Прайм Инвест.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">9. Можно ли к вам попасть трейдером?</summary><div class="faq-answer">
+<p>Да, мы открыты к рассмотрению трейдеров.</p>
+<p>Мы ориентируемся на профессиональные стандарты, принятые в зрелой инвестиционной среде: проверяемость данных, прозрачность статистики, контроль рисков, дисциплина исполнения и устойчивость торгового подхода.</p>
+<p>Для рассмотрения трейдера важны:</p>
+<p>— реальный торговый счёт;<br>— открытая и проверяемая статистика;<br>— достаточная торговая история;<br>— понятная торговая система;<br>— контроль рисков и просадок;<br>— собственный капитал трейдера в работе;<br>— готовность к наблюдательному периоду;<br>— спокойная профессиональная коммуникация;<br>— готовность работать по единым правилам команды.</p>
+<p>Нас интересует способность трейдера подтверждать результат фактическими данными, сохранять управляемость риска и проходить разные рыночные периоды в рамках понятной торговой системы.</p>
+<p>Если трейдер разделяет такой подход к работе, мы можем рассмотреть формат сотрудничества.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">10. Где можно посмотреть результаты?</summary><div class="faq-answer">
+<p>Результаты можно посмотреть через публичную статистику.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">11. Доходность гарантирована?</summary><div class="faq-answer">
+<p>Нет.</p>
+<p>Доходность не гарантируется. Любая торговля на финансовых рынках связана с риском.</p>
+<p>Прошлый результат не является гарантией будущей прибыли.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">12. Какие есть риски?</summary><div class="faq-answer">
+<p>Основные риски связаны с торговлей на финансовых рынках: возможны просадки, убыточные периоды, изменение рыночных условий, технические сбои на стороне брокера или платформы копирования.</p>
+<p>Также существуют операционные риски: ошибки при регистрации, пополнении, выводе средств или настройке счёта.</p>
+<p>Поэтому перед подключением важно понимать механику системы, допустимый уровень риска и не использовать капитал, потеря которого критична для жизни, семьи или бизнеса.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">13. Как понять допустимый уровень риска?</summary><div class="faq-answer">
+<p>Допустимый уровень риска зависит от личной финансовой ситуации участника.</p>
+<p>Нужно учитывать:</p>
+<p>— размер свободного капитала;<br>— наличие финансовой подушки;<br>— регулярный доход;<br>— обязательные расходы;<br>— долговую нагрузку;<br>— семейную ситуацию;<br>— срок участия;<br>— психологическую готовность к просадкам.</p>
+<p>К участию стоит направлять только тот капитал, временная просадка или частичная потеря которого не приведёт к критичным последствиям для жизни, семьи или бизнеса.</p>
+<p>Если для подключения нужно использовать последние деньги, кредитные средства или деньги, которые понадобятся в ближайшее время, риск для участника слишком высокий.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">14. Можно ли потерять деньги?</summary><div class="faq-answer">
+<p>Да, риск убытков существует.</p>
+<p>Поэтому один из важных принципов развития системы — диверсификация торговли: подключение нескольких трейдеров, работающих независимо друг от друга, со своими стратегиями и собственным капиталом.</p>
+<p>Сейчас подключение идёт к одному трейдеру. В перспективе система должна развиваться через подключение нескольких трейдеров и нескольких торговых стратегий, чтобы результат участника не зависел от одной точки опоры.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">15. Что будет, если ваши трейдеры потеряют деньги?</summary><div class="faq-answer">
+<p>Убыток отразится на счетах участников, подключённых к копированию.</p>
+<p>Такой риск существует на финансовых рынках, поэтому мы не обещаем отсутствие убытков и не гарантируем доходность.</p>
+<p>Смысл системы — не в отрицании риска, а в его управлении: отбор трейдеров, контроль просадок, публичная статистика и развитие диверсификации торговли.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">16. С какой суммы можно начать?</summary><div class="faq-answer">
+<p>Подключение возможно от 100 долларов.</p>
+<p>Но 100 долларов — это минимальный технический вход, а не капитал, который способен давать значимый финансовый результат.</p>
+<p>Капитал создаётся не разовым пополнением, а системной работой: человек регулярно пополняет счёт, увеличивает базу капитала, не выводит прибыль раньше времени и даёт капиталу время на рост.</p>
+<p>Если ваша цель — получать ощутимый доход от капитала, нужно заранее понимать требуемый размер капитала, срок, план пополнений и допустимый уровень риска.</p>
+<p>Эти параметры рассчитываются индивидуально.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">17. Что такое партнёрское направление?</summary><div class="faq-answer">
+<p>Партнёрское направление — это возможность приглашать людей в систему и получать партнёрское вознаграждение от брокера.</p>
+<p>Это отдельный сценарий участия для тех, кто хочет не только использовать систему для своего капитала, но и развивать партнёрский доход.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">18. За счёт чего формируется партнёрское вознаграждение?</summary><div class="faq-answer">
+<p>Партнёрское вознаграждение начисляет брокер в рамках своей партнёрской программы.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">19. Обязательно ли приглашать людей в систему?</summary><div class="faq-answer">
+<p>Нет.</p>
+<p>Партнёрское направление — это дополнительная возможность, а не обязательное условие участия.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">20. Чем Прайм Инвест отличается от финансовой пирамиды?</summary><div class="faq-answer">
+<p>В финансовой пирамиде выплаты участникам обычно зависят от поступления денег новых участников.</p>
+<p>В Прайм Инвест такой механики нет. Деньги участников находятся на их личных брокерских счетах. Мы не принимаем депозиты, не собираем деньги и не распределяем выплаты между участниками.</p>
+<p>Партнёрские начисления формируются брокером по условиям его партнёрской программы.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">21. Можно ли просто зарегистрироваться и начать самому?</summary><div class="faq-answer">
+<p>Технически — да.</p>
+<p>Но для корректной работы системы регистрация должна проходить по партнёрской ссылке с инструкциями.</p>
+<p>Если зарегистрироваться в RoboForex самостоятельно и не попасть в партнёрскую ветку, партнёрская программа и подключение к копированию будут работать некорректно.</p>
+<p>Так устроена программа копирования сделок у брокера. Поэтому перед регистрацией важно получить корректную партнёрскую ссылку и инструкции.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">22. Если Прайм Инвест не принимает деньги, на чём зарабатывает команда?</summary><div class="faq-answer">
+<p>Важно разделять несколько вещей.</p>
+<p>Трейдеры зарабатывают на торговом результате и комиссиях с прибыльных сделок участников, подключённых к копированию.</p>
+<p>Партнёры системы зарабатывают на партнёрской программе брокера.</p>
+<p>При этом для брокера не существует отдельной финансовой структуры под названием Прайм Инвест. Есть участники, счета, партнёрские связи, копирование сделок и условия брокера.</p>
+<p>Прайм Инвест — это наша система организации, отбора трейдеров, сопровождения участников и развития партнёрского направления. Но деньги, счета, начисления и копирование находятся в инфраструктуре брокера.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">23. Почему вы говорите о рисках, если система работает?</summary><div class="faq-answer">
+<p>Потому что в финансовых рынках риск существует всегда.</p>
+<p>Система Прайм Инвест построена не на обещаниях без риска, а на прозрачной механике: личный счёт участника, публичная статистика, копирование сделок и партнёрская программа брокера.</p>
+</div></details>
+<details class="faq-item"><summary class="faq-question">24. Это пассивный доход?</summary><div class="faq-answer">
+<p>С точки зрения участия в торговле — да: участник не торгует самостоятельно, а подключает копирование сделок.</p>
+<p>Но это не гарантированный доход и не инструмент без риска.</p>
+<p>Корректнее рассматривать это как формат участия в финансовом результате команды трейдеров через копирование сделок на личный счёт.</p>
+</div></details>
+</div>
+</section><section aria-label="Telegram" class="telegram">
+<div class="telegram-panel">
+<div>
+<h2>ЗАПИШИТЕСЬ НА ПЕРСОНАЛЬНУЮ ПРЕЗЕНТАЦИЮ ВОЗМОЖНОСТЕЙ ПРАЙМ ИНВЕСТ</h2>
+<div class="facts-line">Ответы на вопросы • Индивидуальный разбор сценария • Подбор подходящего формата участия</div>
+</div>
+<div class="tg-box">
+<a class="button" href="https://t.me/petliy?text=%D0%90%D0%BB%D0%B5%D0%BA%D1%81%D0%B0%D0%BD%D0%B4%D1%80%2C%20%D0%BF%D1%80%D0%B8%D0%B2%D0%B5%D1%82%21%20%D0%9F%D0%BE%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%B5%D0%BB%20%D1%81%D0%B0%D0%B9%D1%82%20%D0%B8%20%D1%85%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%BF%D0%B8%D1%81%D0%B0%D1%82%D1%8C%D1%81%D1%8F%20%D0%BD%D0%B0%20%D0%BF%D0%B5%D1%80%D1%81%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D1%83%D1%8E%20%D0%BF%D1%80%D0%B5%D0%B7%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8E%20%D0%9F%D1%80%D0%B0%D0%B9%D0%BC%20%D0%98%D0%BD%D0%B2%D0%B5%D1%81%D1%82." rel="noopener" target="_blank">ЗАПИСАТЬСЯ НА ПРЕЗЕНТАЦИЮ →</a>
+</div>
+</div>
+</section><footer class="footer">
+<span>ПРАЙМ ИНВЕСТ</span>
+<span>ФАКТЫ • ПРОЗРАЧНОСТЬ • ВОЗМОЖНОСТИ</span>
+</footer></main>
+<script>
+    if (!Element.prototype.matches) {
+      Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+    }
+    if (!Element.prototype.closest) {
+      Element.prototype.closest = function(selector) {
+        var element = this;
+        while (element && element.nodeType === 1) {
+          if (element.matches(selector)) return element;
+          element = element.parentElement || element.parentNode;
+        }
+        return null;
+      };
+    }
+
+
+    var currentLanguage = 'ru';
+    var staticTranslations = {"ПРАЙМ ИНВЕСТ — Калькулятор возможностей": "PRIME INVEST — Opportunity Calculator", "ПРАЙМ ИНВЕСТ": "PRIME INVEST", "КАЛЬКУЛЯТОР ВОЗМОЖНОСТЕЙ": "OPPORTUNITY CALCULATOR", "СКОЛЬКО МОГУТ ЗАРАБАТЫВАТЬ ВАШИ ДЕНЬГИ?": "HOW MUCH COULD YOUR MONEY EARN?", "РАССЧИТАЙТЕ СВОЙ СЦЕНАРИЙ": "CALCULATE YOUR SCENARIO", "Расчёт строится по зафиксированному среднемесячному показателю и показывает концентрацию суммы участия относительно капитала.": "The calculation uses a fixed average monthly rate and shows the participation amount as a share of your capital.", "ИНВЕСТОР": "INVESTOR", "ПАРТНЁР": "PARTNER", "ЦЕЛЬ": "GOAL", "Укажите свои цифры — калькулятор покажет плановый результат и поможет понять, насколько такой сценарий вам подходит.": "Enter your figures — the calculator will show the planned result and help you understand how well the scenario fits you.", "Свободный инвестиционный капитал, $": "Available investment capital, $", "Сумма участия, $": "Participation amount, $", "Регулярный доход в месяц, $": "Regular monthly income, $", "Обязательные расходы в месяц, $": "Essential monthly expenses, $", "Плановое пополнение в месяц, $": "Planned monthly contribution, $", "Срок, месяцев": "Term, months", "Укажите количество партнёров и средний депозит, чтобы увидеть общий депозит и потенциальный диапазон начислений.": "Enter the number of partners and average deposit to see the total deposit and potential earnings range.", "Количество партнёров": "Number of partners", "Средний депозит, $": "Average deposit, $", "Укажите желаемый доход в месяц. Сайт рассчитает, какой капитал математически нужен при зафиксированном среднемесячном показателе.": "Enter your desired monthly income. The site will calculate the capital mathematically required at the fixed average monthly rate.", "Желаемый доход в месяц, $": "Desired monthly income, $", "Среднемесячный показатель для расчёта: 4,14%. Зафиксирован вручную по состоянию на 02.08.2026.": "Average monthly rate used in the calculation: 4.14%. Manually fixed as of 02 August 2026.", "Доля участия от свободного капитала": "Participation share of available capital", "Срок восстановления суммы": "Amount recovery period", "Итоговый капитал по модели": "Modelled final capital", "Модельный результат": "Modelled result", "Уровень концентрации": "Concentration level", "Финансовая подушка": "Financial buffer", "Оценка": "Assessment", "Разбор сценария": "Scenario analysis", "Как читать уровень концентрации": "How to read the concentration level", "Шкала намеренно консервативная: в институциональном подходе одна стратегия не должна занимать слишком большую долю свободного капитала.": "The scale is intentionally conservative: in an institutional approach, a single strategy should not account for too large a share of available capital.", "До 5% — низкий уровень": "Up to 5% — low level", "Сумма участия занимает небольшую долю свободного капитала. В институциональном подходе это ближе к тестовому формату: можно проверить механику участия, не делая результат системы критичным для всего капитала.": "The participation amount represents a small share of available capital. In an institutional approach, this is closer to a test allocation: you can assess how participation works without making the system’s outcome critical to your overall capital.", "5–10% — умеренный уровень": "5–10% — moderate level", "Сумма уже имеет значение, но остаётся в пределах аккуратного участия. Такой диапазон позволяет оценить сценарий на реальных цифрах и сохранить основную часть капитала вне одного направления.": "The amount is meaningful but remains within a measured allocation. This range lets you assess the scenario with real figures while keeping most capital outside a single direction.", "10–20% — повышенный уровень": "10–20% — elevated level", "Сумма занимает заметную долю свободного капитала. В институциональной логике это зона повышенного внимания: сценарий лучше рассматривать поэтапно и не усиливать без понимания механики и результата.": "The amount represents a noticeable share of available capital. In institutional terms, this requires closer attention: the scenario is better approached gradually and not increased before its mechanics and results are understood.", "Более 20% — критический уровень": "Over 20% — critical level", "Значительная часть свободного капитала направляется в один сценарий. Такой уровень усиливает зависимость от результата одного направления, поэтому более взвешенный подход — снизить сумму участия или распределять капитал между разными решениями.": "A significant share of available capital is allocated to one scenario. This increases dependence on a single outcome, so a more balanced approach is to reduce the participation amount or spread capital across different solutions.", "Как читать результат оценки": "How to read the assessment", "Итоговая оценка учитывает не только долю участия, но и свободный денежный поток, срок восстановления суммы и нагрузку плановых пополнений.": "The final assessment considers not only the participation share, but also free cash flow, the recovery period and the burden of planned contributions.", "Низкий риск": "Low risk", "Умеренный риск": "Moderate risk", "Повышенный риск": "Elevated risk", "Высокий / критический риск": "High / critical risk", "Подходит для спокойной проверки механики участия. Сумма не создаёт заметной нагрузки на капитал и позволяет посмотреть, как работает счёт, копирование, пополнение, вывод и контроль результата.": "Suitable for a measured test of how participation works. The amount does not place a noticeable burden on capital and lets you observe the account, copying, contributions, withdrawals and performance monitoring.", "Можно рассматривать как рабочий сценарий. Сумма уже имеет значение, но остаётся в управляемых рамках относительно капитала, доходов и свободного денежного потока.": "Can be considered a workable scenario. The amount is meaningful but remains manageable relative to capital, income and free cash flow.", "Лучше рассматривать поэтапно. Такой сценарий требует большей дисциплины: разумнее снизить стартовую сумму, проверить механику меньшим объёмом и только потом увеличивать участие.": "Better approached gradually. This scenario requires more discipline: it is more reasonable to reduce the starting amount, test the mechanics with a smaller allocation, and only then increase participation.", "Сценарий требует осторожности. На старте лучше снизить нагрузку, выбрать меньшую сумму участия или вернуться к более умеренному варианту расчёта.": "The scenario requires caution. At the outset, it is better to reduce the burden, choose a smaller participation amount or return to a more moderate calculation.", "ПРОВЕРКА ЧЕРЕЗ ПУБЛИЧНЫЙ МОНИТОРИНГ": "VERIFICATION THROUGH PUBLIC MONITORING", "ПУБЛИЧНАЯ СТАТИСТИКА": "PUBLIC STATISTICS", "Начало": "Start", "Сделок": "Trades", "Год": "Year", "Формат": "Format", "ПОСМОТРЕТЬ СТАТИСТИКУ →": "VIEW STATISTICS →", "Счёт отражает работу системы и её результаты, а не общий подключённый капитал.": "The account reflects the system’s operation and results, not the total connected capital.", "Вопросы и ответы": "Questions and answers", "Ключевые вопросы по системе, рискам, деньгам участников, партнёрскому направлению и формату подключения.": "Key questions about the system, risks, participants’ funds, the partner track and the connection process.", "1. Что такое Прайм Инвест?": "1. What is Prime Invest?", "Прайм Инвест — это система работы с капиталом, которая объединяет команду трейдеров, копирование сделок на личные счета участников и партнёрское направление.": "Prime Invest is a capital-management framework that combines a team of traders, trade copying to participants’ personal accounts and a partner track.", "Участник может использовать систему в двух форматах: для создания личного капитала или для развития партнёрского дохода.": "A participant can use the system in two ways: to build personal capital or to develop partner income.", "2. Прайм Инвест — это инвестиционный фонд?": "2. Is Prime Invest an investment fund?", "Нет.": "No.", "Прайм Инвест не является инвестиционным фондом, управляющей компанией, брокером или инвестиционной платформой.": "Prime Invest is not an investment fund, asset manager, broker or investment platform.", "Мы не принимаем деньги участников, не храним их и не управляем ими напрямую.": "We do not accept, hold or directly manage participants’ funds.", "3. Как участник зарабатывает на своём капитале?": "3. How does a participant earn on their capital?", "Участник открывает личный счёт у брокера, пополняет его и подключает копирование сделок.": "The participant opens a personal brokerage account, funds it and enables trade copying.", "После подключения сделки трейдера автоматически копируются на счёт участника.": "Once connected, the trader’s trades are automatically copied to the participant’s account.", "4. Где находятся деньги участника?": "4. Where are the participant’s funds held?", "Деньги участника находятся на его личном счёте у брокера.": "The participant’s funds remain in their personal account with the broker.", "Участник самостоятельно пополняет счёт, отслеживает баланс и операции, а также самостоятельно оформляет вывод средств через личный кабинет брокера.": "The participant funds the account, monitors balances and transactions, and requests withdrawals independently through the broker’s account interface.", "5. Что такое брокер и брокерская инфраструктура?": "5. What are a broker and brokerage infrastructure?", "Брокер — это компания, через которую участник открывает торговый счёт, пополняет его, выводит средства и подключает копирование сделок.": "A broker is the company through which a participant opens a trading account, deposits and withdraws funds, and enables trade copying.", "Брокерская инфраструктура — это личный кабинет участника, торговый счёт, пополнение, вывод средств, история операций, копирование сделок и начисления по партнёрской программе.": "Brokerage infrastructure includes the participant portal, trading account, deposits, withdrawals, transaction history, trade copying and partner-program payments.", "Именно через брокера проходят все финансовые и технические операции. Мы не создаём отдельный внутренний баланс, не принимаем деньги участников и не заменяем брокера.": "All financial and technical operations take place through the broker. We do not create a separate internal balance, accept participants’ funds or replace the broker.", "6. Прайм Инвест принимает деньги клиентов?": "6. Does Prime Invest accept clients’ funds?", "Мы не принимаем деньги на карты, личные счета, криптокошельки или внутренние балансы.": "We do not accept funds to bank cards, personal accounts, crypto wallets or internal balances.", "Все финансовые операции проходят через брокера и личный кабинет участника.": "All financial operations take place through the broker and the participant’s personal account.", "7. Нужно ли самому разбираться в трейдинге?": "7. Do I need to understand trading myself?", "Нет, для подключения не требуется самостоятельно торговать или анализировать рынок.": "No. You do not need to trade or analyse the market yourself in order to connect.", "Но важно понимать базовые вещи: где находится счёт, как работает копирование, какие есть риски и как отслеживать результат.": "However, it is important to understand the basics: where the account is held, how copying works, what risks exist and how results are monitored.", "8. Кто торгует?": "8. Who trades?", "В основе системы — работа команды трейдеров Прайм Инвест.": "The system is based on the work of the Prime Invest trading team.", "9. Можно ли к вам попасть трейдером?": "9. Can I join you as a trader?", "Да, мы открыты к рассмотрению трейдеров.": "Yes, we are open to reviewing traders.", "Мы ориентируемся на профессиональные стандарты, принятые в зрелой инвестиционной среде: проверяемость данных, прозрачность статистики, контроль рисков, дисциплина исполнения и устойчивость торгового подхода.": "We follow professional standards used in mature investment environments: verifiable data, transparent statistics, risk control, execution discipline and a robust trading approach.", "Для рассмотрения трейдера важны:": "For a trader to be considered, the following are important:", "— реальный торговый счёт;": "— a live trading account;", "— открытая и проверяемая статистика;": "— open and verifiable statistics;", "— достаточная торговая история;": "— sufficient trading history;", "— понятная торговая система;": "— a clear trading system;", "— контроль рисков и просадок;": "— control of risk and drawdowns;", "— собственный капитал трейдера в работе;": "— the trader’s own capital at work;", "— готовность к наблюдательному периоду;": "— willingness to undergo an observation period;", "— спокойная профессиональная коммуникация;": "— calm, professional communication;", "— готовность работать по единым правилам команды.": "— willingness to work under common team rules.", "Нас интересует способность трейдера подтверждать результат фактическими данными, сохранять управляемость риска и проходить разные рыночные периоды в рамках понятной торговой системы.": "We are interested in a trader’s ability to substantiate results with actual data, keep risk manageable and navigate different market conditions within a clear trading system.", "Если трейдер разделяет такой подход к работе, мы можем рассмотреть формат сотрудничества.": "If a trader shares this approach, we can consider a cooperation format.", "10. Где можно посмотреть результаты?": "10. Where can I view the results?", "Результаты можно посмотреть через публичную статистику.": "The results are available through public statistics.", "11. Доходность гарантирована?": "11. Are returns guaranteed?", "Доходность не гарантируется. Любая торговля на финансовых рынках связана с риском.": "Returns are not guaranteed. All financial-market trading involves risk.", "Прошлый результат не является гарантией будущей прибыли.": "Past performance does not guarantee future profits.", "12. Какие есть риски?": "12. What are the risks?", "Основные риски связаны с торговлей на финансовых рынках: возможны просадки, убыточные периоды, изменение рыночных условий, технические сбои на стороне брокера или платформы копирования.": "The main risks relate to financial-market trading: drawdowns, losing periods, changing market conditions and technical failures at the broker or copying platform may occur.", "Также существуют операционные риски: ошибки при регистрации, пополнении, выводе средств или настройке счёта.": "There are also operational risks, including errors during registration, deposits, withdrawals or account setup.", "Поэтому перед подключением важно понимать механику системы, допустимый уровень риска и не использовать капитал, потеря которого критична для жизни, семьи или бизнеса.": "Before connecting, it is important to understand the system mechanics and acceptable risk level, and not to use capital whose loss would be critical to your life, family or business.", "13. Как понять допустимый уровень риска?": "13. How do I determine an acceptable level of risk?", "Допустимый уровень риска зависит от личной финансовой ситуации участника.": "An acceptable risk level depends on the participant’s personal financial circumstances.", "Нужно учитывать:": "Consider the following:", "— размер свободного капитала;": "— available capital;", "— наличие финансовой подушки;": "— the size of the financial buffer;", "— регулярный доход;": "— regular income;", "— обязательные расходы;": "— essential expenses;", "— долговую нагрузку;": "— debt burden;", "— семейную ситуацию;": "— family circumstances;", "— срок участия;": "— participation term;", "— психологическую готовность к просадкам.": "— psychological readiness for drawdowns.", "К участию стоит направлять только тот капитал, временная просадка или частичная потеря которого не приведёт к критичным последствиям для жизни, семьи или бизнеса.": "Only capital whose temporary drawdown or partial loss would not have critical consequences for your life, family or business should be allocated.", "Если для подключения нужно использовать последние деньги, кредитные средства или деньги, которые понадобятся в ближайшее время, риск для участника слишком высокий.": "If participation requires your last available funds, borrowed money or funds needed in the near future, the risk is too high.", "14. Можно ли потерять деньги?": "14. Can money be lost?", "Да, риск убытков существует.": "Yes, losses are possible.", "Поэтому один из важных принципов развития системы — диверсификация торговли: подключение нескольких трейдеров, работающих независимо друг от друга, со своими стратегиями и собственным капиталом.": "One important principle of the system’s development is trading diversification: connecting several traders who work independently with their own strategies and capital.", "Сейчас подключение идёт к одному трейдеру. В перспективе система должна развиваться через подключение нескольких трейдеров и нескольких торговых стратегий, чтобы результат участника не зависел от одной точки опоры.": "At present, copying is connected to one trader. Over time, the system is intended to develop by adding several traders and strategies so that a participant’s outcome does not depend on a single point of support.", "15. Что будет, если ваши трейдеры потеряют деньги?": "15. What happens if your traders lose money?", "Убыток отразится на счетах участников, подключённых к копированию.": "The loss will be reflected in the accounts of participants connected to copying.", "Такой риск существует на финансовых рынках, поэтому мы не обещаем отсутствие убытков и не гарантируем доходность.": "This risk exists in financial markets, so we do not promise an absence of losses or guarantee returns.", "Смысл системы — не в отрицании риска, а в его управлении: отбор трейдеров, контроль просадок, публичная статистика и развитие диверсификации торговли.": "The purpose of the system is not to deny risk, but to manage it through trader selection, drawdown control, public statistics and the development of trading diversification.", "16. С какой суммы можно начать?": "16. What is the minimum starting amount?", "Подключение возможно от 100 долларов.": "Connection is available from $100.", "Но 100 долларов — это минимальный технический вход, а не капитал, который способен давать значимый финансовый результат.": "However, $100 is the minimum technical entry amount, not capital capable of producing a meaningful financial result.", "Капитал создаётся не разовым пополнением, а системной работой: человек регулярно пополняет счёт, увеличивает базу капитала, не выводит прибыль раньше времени и даёт капиталу время на рост.": "Capital is built not through a one-off deposit, but through a systematic process: regularly funding the account, increasing the capital base, avoiding premature profit withdrawals and allowing capital time to grow.", "Если ваша цель — получать ощутимый доход от капитала, нужно заранее понимать требуемый размер капитала, срок, план пополнений и допустимый уровень риска.": "If your goal is to earn meaningful income from capital, you should understand the required capital size, term, contribution plan and acceptable risk level in advance.", "Эти параметры рассчитываются индивидуально.": "These parameters are calculated individually.", "17. Что такое партнёрское направление?": "17. What is the partner track?", "Партнёрское направление — это возможность приглашать людей в систему и получать партнёрское вознаграждение от брокера.": "The partner track is an opportunity to invite people to the system and receive partner compensation from the broker.", "Это отдельный сценарий участия для тех, кто хочет не только использовать систему для своего капитала, но и развивать партнёрский доход.": "It is a separate participation scenario for those who want both to use the system for their own capital and to develop partner income.", "18. За счёт чего формируется партнёрское вознаграждение?": "18. How is partner compensation generated?", "Партнёрское вознаграждение начисляет брокер в рамках своей партнёрской программы.": "Partner compensation is paid by the broker under its partner program.", "19. Обязательно ли приглашать людей в систему?": "19. Is inviting people required?", "Партнёрское направление — это дополнительная возможность, а не обязательное условие участия.": "The partner track is an additional opportunity, not a mandatory condition of participation.", "20. Чем Прайм Инвест отличается от финансовой пирамиды?": "20. How is Prime Invest different from a financial pyramid?", "В финансовой пирамиде выплаты участникам обычно зависят от поступления денег новых участников.": "In a financial pyramid, payments to participants usually depend on funds received from new participants.", "В Прайм Инвест такой механики нет. Деньги участников находятся на их личных брокерских счетах. Мы не принимаем депозиты, не собираем деньги и не распределяем выплаты между участниками.": "Prime Invest does not use this mechanism. Participants’ funds remain in their personal brokerage accounts. We do not accept deposits, pool funds or distribute payments among participants.", "Партнёрские начисления формируются брокером по условиям его партнёрской программы.": "Partner payments are generated by the broker under its partner-program terms.", "21. Можно ли просто зарегистрироваться и начать самому?": "21. Can I simply register and start on my own?", "Технически — да.": "Technically, yes.", "Но для корректной работы системы регистрация должна проходить по партнёрской ссылке с инструкциями.": "For the system to work correctly, registration must be completed through the partner link and according to the instructions.", "Если зарегистрироваться в RoboForex самостоятельно и не попасть в партнёрскую ветку, партнёрская программа и подключение к копированию будут работать некорректно.": "If you register with RoboForex independently and are not placed in the partner branch, the partner program and copying connection will not work correctly.", "Так устроена программа копирования сделок у брокера. Поэтому перед регистрацией важно получить корректную партнёрскую ссылку и инструкции.": "This is how the broker’s trade-copying program is structured. It is therefore important to obtain the correct partner link and instructions before registering.", "22. Если Прайм Инвест не принимает деньги, на чём зарабатывает команда?": "22. If Prime Invest does not accept funds, how does the team earn?", "Важно разделять несколько вещей.": "It is important to distinguish several elements.", "Трейдеры зарабатывают на торговом результате и комиссиях с прибыльных сделок участников, подключённых к копированию.": "Traders earn from trading results and commissions on profitable trades of participants connected to copying.", "Партнёры системы зарабатывают на партнёрской программе брокера.": "System partners earn through the broker’s partner program.", "При этом для брокера не существует отдельной финансовой структуры под названием Прайм Инвест. Есть участники, счета, партнёрские связи, копирование сделок и условия брокера.": "For the broker, there is no separate financial entity called Prime Invest. There are participants, accounts, partner relationships, trade copying and broker terms.", "Прайм Инвест — это наша система организации, отбора трейдеров, сопровождения участников и развития партнёрского направления. Но деньги, счета, начисления и копирование находятся в инфраструктуре брокера.": "Prime Invest is our system for organisation, trader selection, participant support and partner-track development. Funds, accounts, payments and copying remain within the broker’s infrastructure.", "23. Почему вы говорите о рисках, если система работает?": "23. Why do you discuss risks if the system works?", "Потому что в финансовых рынках риск существует всегда.": "Because risk always exists in financial markets.", "Система Прайм Инвест построена не на обещаниях без риска, а на прозрачной механике: личный счёт участника, публичная статистика, копирование сделок и партнёрская программа брокера.": "Prime Invest is built not on promises of risk-free returns, but on a transparent mechanism: the participant’s personal account, public statistics, trade copying and the broker’s partner program.", "24. Это пассивный доход?": "24. Is this passive income?", "С точки зрения участия в торговле — да: участник не торгует самостоятельно, а подключает копирование сделок.": "From the standpoint of trading participation, yes: the participant does not trade independently but enables trade copying.", "Но это не гарантированный доход и не инструмент без риска.": "However, it is not guaranteed income or a risk-free instrument.", "Корректнее рассматривать это как формат участия в финансовом результате команды трейдеров через копирование сделок на личный счёт.": "It is more accurate to view it as participation in the financial outcome of a trading team through copying trades to a personal account.", "ЗАПИШИТЕСЬ НА ПЕРСОНАЛЬНУЮ ПРЕЗЕНТАЦИЮ ВОЗМОЖНОСТЕЙ ПРАЙМ ИНВЕСТ": "BOOK A PERSONAL PRIME INVEST OPPORTUNITY PRESENTATION", "Ответы на вопросы • Индивидуальный разбор сценария • Подбор подходящего формата участия": "Answers to your questions • Individual scenario review • Selection of a suitable participation format", "ЗАПИСАТЬСЯ НА ПРЕЗЕНТАЦИЮ →": "BOOK A PRESENTATION →", "ФАКТЫ • ПРОЗРАЧНОСТЬ • ВОЗМОЖНОСТИ": "FACTS • TRANSPARENCY • OPPORTUNITIES"};
+    var originalTextNodes = [];
+
+    function L(ru, en) { return currentLanguage === 'en' ? en : ru; }
+
+    function captureOriginalTextNodes() {
+      if (originalTextNodes.length) return;
+      var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+      var node;
+      while ((node = walker.nextNode())) {
+        if (!node.parentNode || node.parentNode.tagName === 'SCRIPT' || node.parentNode.tagName === 'STYLE') continue;
+        var key = node.nodeValue.replace(/\s+/g, ' ').trim();
+        if (key) originalTextNodes.push({ node: node, original: node.nodeValue, key: key });
+      }
+    }
+
+    function applyStaticLanguage() {
+      captureOriginalTextNodes();
+      originalTextNodes.forEach(function(item) {
+        var replacement = currentLanguage === 'en' ? staticTranslations[item.key] : item.key;
+        if (!replacement) replacement = item.key;
+        var leading = (item.original.match(/^\s*/) || [''])[0];
+        var trailing = (item.original.match(/\s*$/) || [''])[0];
+        item.node.nodeValue = leading + replacement + trailing;
+      });
+      document.documentElement.lang = currentLanguage;
+      document.title = L('ПРАЙМ ИНВЕСТ — Калькулятор возможностей', 'PRIME INVEST — Opportunity Calculator');
+      var metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription) metaDescription.setAttribute('content', L('Интерактивный калькулятор ПРАЙМ ИНВЕСТ для самостоятельной оценки сценариев.', 'Interactive PRIME INVEST calculator for independent scenario assessment.'));
+      var buttons = document.querySelectorAll('.language-button');
+      Array.prototype.forEach.call(buttons, function(button) {
+        button.classList.toggle('active', button.getAttribute('data-language') === currentLanguage);
+      });
+      var cta = document.querySelector('.telegram-panel .button');
+      if (cta) {
+        var message = L('Александр, привет! Посмотрел сайт и хочу записаться на персональную презентацию Прайм Инвест.', 'Hi Alexander! I have reviewed the website and would like to book a personal Prime Invest presentation.');
+        cta.href = 'https://t.me/petliy?text=' + encodeURIComponent(message);
+      }
+    }
+
+    function setLanguage(language) {
+      currentLanguage = language === 'en' ? 'en' : 'ru';
+      try { localStorage.setItem('primeInvestLanguage', currentLanguage); } catch (error) {}
+      applyStaticLanguage();
+      calculateScenario();
+    }
+
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => Array.from(document.querySelectorAll(s));
+    const money = (n) => '$' + Math.round(Number.isFinite(n) ? n : 0).toLocaleString('en-US');
+    const pct = (n) => {
+      const value = Number.isFinite(n) ? n.toFixed(2) : '0.00';
+      return (currentLanguage === 'en' ? value : value.replace('.', ',')) + '%';
+    };
+    const strategy = {
+      monthlyRatePercent: 4.14,
+      updatedAt: '02.08.2026'
+    };
+    let monitoringRate = strategy.monthlyRatePercent / 100;
+
+    function value(id) {
+      const el = document.getElementById(id);
+      if (!el) return 0;
+      const n = parseFloat(String(el.value).replace(',', '.'));
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function setText(id, text) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
+    }
+
+    function setHTML(id, html) {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = html;
+    }
+
+    function setStatusClass(id, status) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove('status-soft', 'status-watch', 'status-alert', 'status-critical', 'status-empty');
+      el.classList.add(status || 'status-empty');
+    }
+
+    function concentrationLevel(ratio) {
+      if (!Number.isFinite(ratio) || ratio <= 0) return ['—', null, 'status-empty', L('недостаточно данных', 'insufficient data')];
+      if (ratio <= 0.05) return [L('НИЗКИЙ', 'LOW'), 0, 'status-soft', L('низкий уровень концентрации', 'a low concentration level')];
+      if (ratio <= 0.10) return [L('УМЕРЕННЫЙ', 'MODERATE'), 1, 'status-soft', L('умеренный уровень концентрации', 'a moderate concentration level')];
+      if (ratio <= 0.20) return [L('ПОВЫШЕННЫЙ', 'ELEVATED'), 2, 'status-watch', L('повышенный уровень концентрации', 'an elevated concentration level')];
+      return [L('КРИТИЧЕСКИЙ', 'CRITICAL'), 3, 'status-critical', L('критический уровень концентрации', 'a critical concentration level')];
+    }
+
+    function recoveryRisk(months) {
+      if (!Number.isFinite(months)) return 100;
+      if (months <= 1) return 10;
+      if (months <= 3) return 25;
+      if (months <= 6) return 45;
+      if (months <= 12) return 70;
+      return 95;
+    }
+
+    function pressureRisk(pressure) {
+      if (!Number.isFinite(pressure)) return 80;
+      if (pressure <= 0) return 0;
+      if (pressure <= 0.20) return 15;
+      if (pressure <= 0.40) return 35;
+      if (pressure < 0.60) return 50;
+      if (pressure < 1) return 75;
+      if (pressure === 1) return 85;
+      return 95;
+    }
+
+    function monthValue(months) {
+      return (currentLanguage === 'en' ? months.toFixed(1) : months.toFixed(1).replace('.', ',')) + L(' мес.', ' mo.');
+    }
+
+    function cushionStatus(months) {
+      if (!Number.isFinite(months)) return ['—', 'status-empty', L('финансовую подушку в месяцах оценить нельзя', 'the financial buffer cannot be measured in months')];
+      if (months < 3) return [monthValue(months), 'status-critical', L('слабая финансовая подушка', 'a weak financial buffer')];
+      if (months < 6) return [monthValue(months), 'status-alert', L('ограниченная финансовая подушка', 'a limited financial buffer')];
+      if (months < 12) return [monthValue(months), 'status-watch', L('нормальная финансовая подушка', 'a reasonable financial buffer')];
+      if (months < 24) return [monthValue(months), 'status-soft', L('сильная финансовая подушка', 'a strong financial buffer')];
+      return [monthValue(months), 'status-soft', L('очень сильная финансовая подушка', 'a very strong financial buffer')];
+    }
+
+    function cushionModifier(months) {
+      if (!Number.isFinite(months)) return 0;
+      if (months >= 24) return -1;
+      if (months >= 6) return 0;
+      if (months >= 3) return 1;
+      return 2;
+    }
+
+    function contributionRiskFloor(freeCashFlow, monthlyContribution, pressure) {
+      if (monthlyContribution <= 0) return null;
+      if (freeCashFlow <= 0) return 82;
+      if (!Number.isFinite(pressure)) return null;
+      if (pressure > 1) return 82;
+      if (pressure === 1) return 65;
+      if (pressure >= 0.60) return 45;
+      return null;
+    }
+
+    function recoveryModifier(months, freeCashFlow, cushionMonths) {
+      if (freeCashFlow > 0) {
+        if (!Number.isFinite(months)) return 2;
+        if (months <= 1) return -1;
+        if (months <= 3) return 0;
+        if (months <= 6) return 1;
+        if (months <= 12) return 1;
+        return 2;
+      }
+      if (freeCashFlow === 0) {
+        if (Number.isFinite(cushionMonths) && cushionMonths >= 24) return 0;
+        if (Number.isFinite(cushionMonths) && cushionMonths >= 12) return 1;
+        if (Number.isFinite(cushionMonths) && cushionMonths >= 6) return 2;
+        return 3;
+      }
+      if (freeCashFlow < 0) {
+        if (Number.isFinite(cushionMonths) && cushionMonths >= 24) return 1;
+        if (Number.isFinite(cushionMonths) && cushionMonths >= 12) return 2;
+        return 3;
+      }
+      return 1;
+    }
+
+    function scenarioRiskRank(baseRank, recoveryMonths, freeCashFlow, monthlyContribution, pressure, cushionMonths, ratio, remainingCapital) {
+      if (!Number.isFinite(baseRank)) return null;
+      let rank = baseRank + recoveryModifier(recoveryMonths, freeCashFlow, cushionMonths) + cushionModifier(cushionMonths);
+
+      if (freeCashFlow <= 0) {
+        rank = Math.max(rank, baseRank);
+      }
+
+      if (Number.isFinite(cushionMonths) && cushionMonths >= 24 && monthlyContribution <= Math.max(freeCashFlow, 0) && freeCashFlow > 0) {
+        if (baseRank <= 1) {
+          rank = 0;
+        } else if (baseRank === 2) {
+          rank = Math.min(rank, 1);
+        } else if (baseRank >= 3) {
+          rank = Math.min(rank, 2);
+        }
+      }
+
+      if (freeCashFlow < 0) {
+        if (Number.isFinite(cushionMonths) && cushionMonths >= 24) rank = Math.max(rank, 2);
+        else if (Number.isFinite(cushionMonths) && cushionMonths >= 12) rank = Math.max(rank, 3);
+        else rank = Math.max(rank, 4);
+      }
+
+      if (monthlyContribution > 0) {
+        const deficitAfterContribution = monthlyContribution - Math.max(freeCashFlow, 0);
+        const burnMonths = deficitAfterContribution > 0 && remainingCapital > 0 ? remainingCapital / deficitAfterContribution : NaN;
+        if (freeCashFlow <= 0) {
+          if (Number.isFinite(burnMonths) && burnMonths >= 24) rank = Math.max(rank, 2);
+          else if (Number.isFinite(burnMonths) && burnMonths >= 12) rank = Math.max(rank, 3);
+          else rank = Math.max(rank, 4);
+        } else if (pressure > 1) {
+          const fullCashFlowFloor = Number.isFinite(cushionMonths) && cushionMonths >= 24 ? 2 : 3;
+          rank = Math.max(rank, fullCashFlowFloor);
+          if (Number.isFinite(burnMonths) && burnMonths < 12) rank = Math.max(rank, 4);
+          else if (Number.isFinite(burnMonths) && burnMonths < 24) rank = Math.max(rank, 3);
+        } else if (pressure === 1) {
+          rank = Math.max(rank, Number.isFinite(cushionMonths) && cushionMonths >= 24 ? 2 : 3);
+        } else if (pressure >= 0.60) {
+          rank = Math.max(rank, 2);
+        } else if (pressure >= 0.40) {
+          rank = Math.max(rank, 1);
+        }
+      }
+
+      if (Number.isFinite(ratio)) {
+        if (ratio >= 0.50) rank = Math.max(rank, 3);
+        else if (ratio >= 0.35) rank = Math.max(rank, 3);
+        else if (ratio >= 0.20) rank = Math.max(rank, 2);
+      }
+
+      return Math.max(0, Math.min(4, rank));
+    }
+
+    function totalRiskLabel(rank) {
+      if (!Number.isFinite(rank)) return ['—', 'status-empty'];
+      if (rank <= 0) return [L('НИЗКИЙ РИСК', 'LOW RISK'), 'status-soft'];
+      if (rank === 1) return [L('УМЕРЕННЫЙ РИСК', 'MODERATE RISK'), 'status-soft'];
+      if (rank === 2) return [L('ПОВЫШЕННЫЙ РИСК', 'ELEVATED RISK'), 'status-watch'];
+      if (rank === 3) return [L('ВЫСОКИЙ РИСК', 'HIGH RISK'), 'status-alert'];
+      return [L('КРИТИЧЕСКИЙ РИСК', 'CRITICAL RISK'), 'status-critical'];
+    }
+
+    function horizonProfile(months) {
+      if (months <= 6) return L('Срок 6 месяцев — тестовый период. Его удобно использовать, чтобы посмотреть механику участия, движение капитала и первые результаты в личном кабинете.', 'A 6-month term is a test period. It is useful for observing participation mechanics, capital movement and the first results in the personal account.');
+      if (months <= 12) return L('Срок 12 месяцев — базовый годовой сценарий. Он уже позволяет увидеть, как выбранная сумма работает на дистанции, а не на одном коротком отрезке.', 'A 12-month term is a basic annual scenario. It shows how the selected amount performs over a meaningful period rather than a single short interval.');
+      if (months <= 24) return L('Срок 24 месяца — рабочий среднесрочный сценарий. На такой дистанции заметнее раскрывается эффект регулярного роста и плановых пополнений.', 'A 24-month term is a workable medium-term scenario. Over this period, the effects of regular growth and planned contributions become more visible.');
+      if (months <= 36) return L('Срок 36 месяцев — стратегический сценарий формирования капитала. Это уже не тест, а полноценная модель постепенного роста.', 'A 36-month term is a strategic capital-building scenario. It is no longer a test, but a full model of gradual growth.');
+      return L('Срок 60 месяцев — долгосрочный сценарий. Здесь сильнее всего проявляется эффект сложного процента и накопления результата во времени.', 'A 60-month term is a long-term scenario. This is where compounding and the accumulation of results over time are most visible.');
+    }
+
+    function buildScenarioReview(data) {
+      var freeCapital=data.freeCapital, amount=data.amount, income=data.income, expenses=data.expenses, monthlyContribution=data.monthlyContribution, months=data.months, freeCashFlow=data.freeCashFlow, availableCashFlow=data.availableCashFlow, ratio=data.ratio, recoveryMonths=data.recoveryMonths, pressure=data.pressure, concentrationText=data.concentrationText, cushionMonths=data.cushionMonths, cushionText=data.cushionText, totalLabel=data.totalLabel;
+      if (!Number.isFinite(ratio) || ratio <= 0) return '<p>' + L('Укажите свободный инвестиционный капитал и сумму участия. Без этих двух значений невозможно оценить концентрацию, восстановляемость суммы и реалистичность участия.', 'Enter available investment capital and the participation amount. Without these two values, concentration, recoverability and scenario feasibility cannot be assessed.') + '</p>';
+      var parts=[];
+      parts.push(L('Сумма участия ', 'The participation amount of ') + money(amount) + L(' составляет ', ' represents ') + pct(ratio*100) + L(' от свободного инвестиционного капитала ', ' of the available investment capital of ') + money(freeCapital) + '. ' + L('Это ', 'This is ') + concentrationText + '.');
+      var remainingCapital=freeCapital-amount;
+      if (expenses>0 && Number.isFinite(cushionMonths)) {
+        var common=L('После участия вне сценария остаётся ', 'After participation, ') + money(Math.max(remainingCapital,0)) + L(' — примерно на ', ' remains outside the scenario — approximately ') + monthValue(cushionMonths) + L(' обязательных расходов. Это ', ' of essential expenses. This is ') + cushionText + ': ';
+        if (cushionMonths>=24) parts.push(common + L('сценарий не забирает основную базу капитала и выглядит устойчивее с точки зрения личной нагрузки.', 'the scenario does not consume the core capital base and appears more resilient from a personal-finance perspective.'));
+        else if (cushionMonths>=6) parts.push(common + L('запас есть, и он помогает спокойнее оценивать сценарий.', 'the reserve provides room to assess the scenario more comfortably.'));
+        else if (cushionMonths>0) parts.push(common + L('запас ограничен, поэтому нагрузку сценария стоит оценивать аккуратнее.', 'the reserve is limited, so the burden of the scenario should be assessed more carefully.'));
+        else parts.push(L('После участия свободный капитал вне сценария не остаётся. Финансовая подушка отсутствует, поэтому такой сценарий будет восприниматься значительно жёстче.', 'No available capital remains outside the scenario after participation. The financial buffer is absent, making the scenario materially more demanding.'));
+      } else parts.push(L('Обязательные расходы не указаны, поэтому финансовую подушку в месяцах оценить нельзя. Для более точного разбора стоит указать хотя бы ориентировочный уровень ежемесячных расходов.', 'Essential expenses are not specified, so the financial buffer cannot be assessed in months. Enter at least an approximate monthly expense figure for a more accurate analysis.'));
+      if (income<=0) parts.push(L('Регулярный доход не указан. В таком сценарии участие нельзя оценивать как устойчивое: источник восстановления суммы не подтверждён.', 'Regular income is not specified. The scenario cannot be assessed as sustainable because the source for recovering the amount is not established.'));
+      else if (freeCashFlow===0) parts.push(Number.isFinite(cushionMonths)&&cushionMonths>=24 ? L('При доходе '+money(income)+' и обязательных расходах '+money(expenses)+' свободный денежный поток не сформирован. При этом вне сценария остаётся сильная финансовая подушка, поэтому основная устойчивость здесь создаётся сохранённым капиталом.', 'With income of '+money(income)+' and essential expenses of '+money(expenses)+', no free cash flow is generated. However, a strong financial buffer remains outside the scenario, so resilience is primarily supported by retained capital.') : L('При доходе '+money(income)+' и обязательных расходах '+money(expenses)+' свободный денежный поток не сформирован. В таком сценарии сумма не восстанавливается из текущего дохода, поэтому важнее смотреть на размер финансовой подушки.', 'With income of '+money(income)+' and essential expenses of '+money(expenses)+', no free cash flow is generated. The amount is therefore not recovered from current income, making the size of the financial buffer more important.'));
+      else if (freeCashFlow<0) parts.push(Number.isFinite(cushionMonths)&&cushionMonths>=24 ? L('Обязательные расходы выше регулярного дохода, поэтому текущий денежный поток отрицательный. Сильная финансовая подушка смягчает сценарий, но сама модель участия становится более чувствительной к расходам.', 'Essential expenses exceed regular income, producing negative current cash flow. A strong financial buffer softens the scenario, but participation remains more sensitive to expenses.') : L('Обязательные расходы выше регулярного дохода, поэтому текущий денежный поток отрицательный. В таком формате участие выглядит напряжённее: сначала важно понимать, за счёт чего будет закрываться ежемесячный дефицит.', 'Essential expenses exceed regular income, producing negative current cash flow. This makes participation more demanding, and the source for covering the monthly deficit should be clear.'));
+      else if (monthlyContribution>0 && availableCashFlow>0) parts.push(L('Свободный денежный поток составляет ', 'Free cash flow is ') + money(freeCashFlow) + L(' в месяц. После планового пополнения остаётся ', ' per month. After the planned contribution, ') + money(availableCashFlow) + L(', и от этой суммы срок восстановления составляет примерно ', ' remains, giving an estimated recovery period of ') + monthValue(recoveryMonths) + '.');
+      else if (monthlyContribution>0 && availableCashFlow<=0) parts.push(L('Свободный денежный поток составляет ', 'Free cash flow is ') + money(freeCashFlow) + L(' в месяц, но плановое пополнение забирает его полностью или превышает. В таком режиме появляется отрицательный денежный поток: сценарий требует больше денег, чем остаётся после обязательных расходов и пополнения.', ' per month, but the planned contribution consumes or exceeds it. This creates negative cash flow: the scenario requires more money than remains after essential expenses and contributions.'));
+      else parts.push(L('Свободный денежный поток составляет ', 'Free cash flow is ') + money(freeCashFlow) + L(' в месяц. При таком потоке сумма участия восстанавливается примерно за ', ' per month. At this rate, the participation amount is recovered in approximately ') + monthValue(recoveryMonths) + '.');
+      if (monthlyContribution>0 && freeCashFlow>0) {
+        if (pressure>1) parts.push(L('Плановое пополнение '+money(monthlyContribution)+' превышает свободный денежный поток '+money(freeCashFlow)+' в месяц. Это означает, что пополнение уже выходит за рамки текущего денежного потока. Такой режим делает сценарий более напряжённым и требует аккуратного снижения нагрузки.', 'The planned contribution of '+money(monthlyContribution)+' exceeds monthly free cash flow of '+money(freeCashFlow)+'. Contributions therefore exceed current cash flow, making the scenario more demanding and calling for a measured reduction in burden.'));
+        else if (pressure===1) parts.push(L('Плановое пополнение '+money(monthlyContribution)+' занимает весь свободный денежный поток. После такого пополнения не остаётся месячного остатка для восстановления суммы, поэтому оценка сценария становится жёстче.', 'The planned contribution of '+money(monthlyContribution)+' uses all free cash flow. No monthly balance remains to recover the amount, so the scenario assessment becomes stricter.'));
+        else if (pressure>=0.60) parts.push(L('Плановое пополнение '+money(monthlyContribution)+' занимает '+pct(pressure*100)+' свободного месячного потока. Это уже заметная нагрузка: такой режим лучше рассматривать поэтапно и не превращать пополнение в обязательный платёж.', 'The planned contribution of '+money(monthlyContribution)+' uses '+pct(pressure*100)+' of monthly free cash flow. This is a noticeable burden and is better approached gradually rather than treated as a mandatory payment.'));
+        else parts.push(L('Плановое пополнение '+money(monthlyContribution)+' занимает '+pct(pressure*100)+' свободного месячного потока. Такой режим выглядит более управляемым, чем пополнение всем свободным потоком.', 'The planned contribution of '+money(monthlyContribution)+' uses '+pct(pressure*100)+' of monthly free cash flow. This is more manageable than contributing the entire free cash flow.'));
+      } else if (monthlyContribution>0 && freeCashFlow<=0) parts.push(L('Плановое пополнение указано при отсутствии свободного денежного потока. Такой режим опирается не на текущий месячный остаток, а на запас капитала, поэтому оценка сценария становится жёстче.', 'A planned contribution is specified despite the absence of free cash flow. The scenario therefore relies on capital reserves rather than the current monthly balance, resulting in a stricter assessment.'));
+      parts.push(horizonProfile(months));
+      if (totalLabel===L('НИЗКИЙ РИСК','LOW RISK') || totalLabel===L('УМЕРЕННЫЙ РИСК','MODERATE RISK')) parts.push(L('Оценка: '+totalLabel.toLowerCase()+'. Сценарий ближе к аккуратному тестовому формату: можно проверять механику участия без зависимости от одной точки опоры.', 'Assessment: '+totalLabel.toLowerCase()+'. The scenario is closer to a measured test format, allowing the participation mechanics to be assessed without dependence on a single point of support.'));
+      else if (totalLabel===L('ПОВЫШЕННЫЙ РИСК','ELEVATED RISK')) parts.push(L('Оценка: повышенный риск. Логика участия возможна, но лучше двигаться поэтапно: снизить стартовую нагрузку, проверить механику и только потом увеличивать участие.', 'Assessment: elevated risk. Participation is feasible, but a gradual approach is preferable: reduce the initial burden, test the mechanics and only then increase participation.'));
+      else if (totalLabel===L('ВЫСОКИЙ РИСК','HIGH RISK')) parts.push(L('Оценка: высокий риск. Сценарий выглядит агрессивно: сумма или пополнения слишком сильно завязаны на текущий капитал и денежный поток. Более разумный вариант — снизить сумму участия или заходить поэтапно.', 'Assessment: high risk. The scenario is aggressive because the amount or contributions rely too heavily on current capital and cash flow. A more measured option is to reduce the participation amount or enter gradually.'));
+      else parts.push(L('Оценка: критический риск. Такой сценарий не выглядит разумным как стартовый формат: сначала стоит снизить сумму участия и вернуться к более умеренному варианту расчёта.', 'Assessment: critical risk. The scenario is not reasonable as a starting format; the participation amount should first be reduced and the calculation returned to a more moderate range.'));
+      return parts.map(function(part){ return '<p>'+part+'</p>'; }).join('');
+    }
+
+    function setLabels(labels) {
+      labels.forEach((label, index) => setText('resultLabel' + (index + 1), label));
+    }
+
+    function setResultOrder(valueIds) {
+      const grid = $('.result-grid');
+      if (!grid) return;
+      valueIds.forEach(id => {
+        const row = (function(el){ return el ? el.closest('.result-row') : null; })(document.getElementById(id));
+        if (row) grid.appendChild(row);
+      });
+    }
+
+    function showResultRows(count) {
+      $$('.result-row').forEach((row, index) => {
+        row.style.display = index < count ? '' : 'none';
+      });
+    }
+
+    function showReviewCard(show) {
+      const card = $('#scenarioReviewCard');
+      if (card) card.style.display = show ? '' : 'none';
+    }
+
+    function moneyRange(min, max) {
+      return money(min) + '–' + money(max);
+    }
+
+    function setLabelByValueId(valueId, label) {
+      const row = (function(el){ return el ? el.closest('.result-row') : null; })(document.getElementById(valueId));
+      const labelEl = row ? row.querySelector('.result-label') : null;
+      if (labelEl) labelEl.textContent = label;
+    }
+
+    function setInvestorLabels() {
+      setLabelByValueId('concentrationValue', L('Доля участия от свободного капитала', 'Participation share of available capital'));
+      setLabelByValueId('riskLevel', L('Уровень концентрации', 'Concentration level'));
+      setLabelByValueId('cushionValue', L('Финансовая подушка', 'Financial buffer'));
+      setLabelByValueId('recoveryValue', L('Срок восстановления суммы', 'Amount recovery period'));
+      setLabelByValueId('scenarioFinal', L('Итоговый капитал по модели', 'Modelled final capital'));
+      setLabelByValueId('scenarioProfit', L('Модельный результат', 'Modelled result'));
+      setLabelByValueId('riskValue', L('Оценка', 'Assessment'));
+    }
+
+    function setPartnerLabels() {
+      setLabels([
+        L('Общий депозит', 'Total deposit'),
+        L('Потенциальный доход в месяц', 'Potential monthly income'),
+        L('Потенциальный доход в год', 'Potential annual income'),
+        '',
+        '',
+        '',
+        ''
+      ]);
+    }
+
+    function setGoalLabels() {
+      setLabels([
+        L('Желаемый доход в месяц', 'Desired monthly income'),
+        L('Необходимый капитал', 'Required capital'),
+        L('Среднемесячный показатель', 'Average monthly rate'),
+        '',
+        '',
+        '',
+        ''
+      ]);
+    }
+
+    function updateReviewTitle(title) {
+      const card = $('#scenarioReviewCard');
+      const titleEl = card ? card.querySelector('.risk-title') : null;
+      if (titleEl) titleEl.textContent = title;
+    }
+
+    function showGuidance(show) {
+      $$('.risk-guidance').forEach(block => {
+        block.style.display = show ? '' : 'none';
+      });
+    }
+
+    function setScenarioSubhead(tab) {
+      var texts = {
+        investor: L('Расчёт строится по зафиксированному среднемесячному показателю и показывает концентрацию суммы участия относительно капитала.', 'The calculation uses a fixed average monthly rate and shows the participation amount as a share of capital.'),
+        partner: L('Расчёт показывает ориентир партнёрского дохода на основе количества партнёров и среднего депозита.', 'The calculation provides an indicative partner-income range based on the number of partners and average deposit.'),
+        goal: L('Расчёт показывает, какой капитал нужен для выхода на выбранный ежемесячный доход по текущей модели.', 'The calculation shows the capital required to reach the selected monthly income under the current model.')
+      };
+      setText('scenarioSubhead', texts[tab] || texts.investor);
+    }
+
+    function calculateInvestorScenario() {
+      setScenarioSubhead('investor');
+      setInvestorLabels();
+      setResultOrder(['concentrationValue', 'riskLevel', 'cushionValue', 'recoveryValue', 'scenarioFinal', 'scenarioProfit', 'riskValue']);
+      showResultRows(7);
+      showReviewCard(true);
+      updateReviewTitle(L('Разбор сценария', 'Scenario analysis'));
+      showGuidance(true);
+      setText('monitoringStatus', L('Среднемесячный показатель для расчёта: ', 'Average monthly rate used in the calculation: ') + pct(strategy.monthlyRatePercent) + L('. Зафиксирован вручную по состоянию на ', '. Manually fixed as of ') + strategy.updatedAt + '.');
+      const freeCapital = value('freeCapital');
+      const amount = value('participationAmount');
+      const income = value('monthlyIncome');
+      const expenses = value('monthlyExpenses');
+      const monthlyContribution = value('monthlyContribution');
+      const months = Math.max(1, value('scenarioMonths'));
+      const freeCashFlow = income - expenses;
+      const availableCashFlow = freeCashFlow - monthlyContribution;
+      const ratio = freeCapital > 0 ? amount / freeCapital : NaN;
+      const recoveryMonths = availableCashFlow > 0 ? amount / availableCashFlow : NaN;
+      const pressure = freeCashFlow > 0 ? monthlyContribution / freeCashFlow : NaN;
+      const remainingCapital = freeCapital - amount;
+      const cushionMonths = expenses > 0 ? Math.max(remainingCapital, 0) / expenses : NaN;
+      const [cushionDisplay, cushionStatusClass, cushionText] = cushionStatus(cushionMonths);
+      const [concentrationLabel, concentrationRank, concentrationStatus, concentrationText] = concentrationLevel(ratio);
+      const hasBaseData = freeCapital > 0 && amount > 0;
+      const totalRank = hasBaseData ? scenarioRiskRank(concentrationRank, recoveryMonths, freeCashFlow, monthlyContribution, pressure, cushionMonths, ratio, remainingCapital) : NaN;
+      const [totalLabel, totalStatus] = totalRiskLabel(totalRank);
+
+      setText('concentrationValue', Number.isFinite(ratio) && ratio > 0 ? pct(ratio * 100) : '—');
+      setText('cushionValue', hasBaseData ? cushionDisplay : '—');
+      setStatusClass('cushionValue', hasBaseData ? cushionStatusClass : 'status-empty');
+      let recoveryDisplay = '—';
+      let recoveryStatus = 'status-empty';
+      if (Number.isFinite(recoveryMonths)) {
+        recoveryDisplay = monthValue(recoveryMonths);
+        recoveryStatus = recoveryMonths <= 3 ? 'status-soft' : recoveryMonths <= 6 ? 'status-watch' : recoveryMonths <= 12 ? 'status-alert' : 'status-critical';
+      } else if ((income > 0 || expenses > 0 || monthlyContribution > 0) && availableCashFlow <= 0) {
+        recoveryDisplay = L('ОТСУТСТВУЕТ', 'UNAVAILABLE');
+        recoveryStatus = 'status-critical';
+      }
+      setText('recoveryValue', recoveryDisplay);
+      setStatusClass('recoveryValue', recoveryStatus);
+      setText('riskLevel', concentrationLabel);
+      setText('riskValue', totalLabel);
+      setStatusClass('riskLevel', concentrationStatus);
+      setStatusClass('riskValue', totalStatus);
+      const commentData = {freeCapital, amount, income, expenses, monthlyContribution, months, freeCashFlow, availableCashFlow, ratio, recoveryMonths, pressure, concentrationText, cushionMonths, cushionText, totalLabel};
+      setHTML('scenarioReview', buildScenarioReview(commentData));
+
+      let capital = amount;
+      for (let i = 0; i < months; i++) {
+        capital = capital * (1 + monitoringRate) + monthlyContribution;
+      }
+      const invested = amount + monthlyContribution * months;
+      setText('scenarioFinal', amount > 0 ? money(capital) : '—');
+      setText('scenarioProfit', amount > 0 ? money(capital - invested) : '—');
+    }
+
+    function calculatePartnerScenario() {
+      setScenarioSubhead('partner');
+      setPartnerLabels();
+      setResultOrder(['concentrationValue', 'recoveryValue', 'scenarioFinal', 'scenarioProfit', 'riskLevel', 'cushionValue', 'riskValue']);
+      showResultRows(3);
+      showReviewCard(false);
+      showGuidance(false);
+      setText('monitoringStatus', L('Расчёт отражает ориентир дохода от первой линии и не включает расширенную глубину партнёрской структуры. Фактические начисления зависят от условий брокера, количества сделок, активности участников, пополнений и подключённых депозитов.', 'The calculation reflects an indicative first-line income and excludes the extended depth of the partner structure. Actual payments depend on broker terms, trading activity, participant activity, contributions and connected deposits.'));
+      ['concentrationValue','recoveryValue','scenarioFinal'].forEach(id => setStatusClass(id, 'status-empty'));
+      const count = value('partnerCount');
+      const avgCapital = value('partnerCapital');
+      const totalDeposit = count * avgCapital;
+      const monthlyMin = totalDeposit * 0.01;
+      const monthlyMax = totalDeposit * 0.03;
+      const yearlyMin = monthlyMin * 12;
+      const yearlyMax = monthlyMax * 12;
+      setText('concentrationValue', totalDeposit > 0 ? money(totalDeposit) : '—');
+      setText('recoveryValue', totalDeposit > 0 ? moneyRange(monthlyMin, monthlyMax) : '—');
+      setText('scenarioFinal', totalDeposit > 0 ? moneyRange(yearlyMin, yearlyMax) : '—');
+      setText('scenarioProfit', '—');
+      setText('riskLevel', '—');
+      setText('riskValue', '—');
+      setText('cushionValue', '—');
+      setStatusClass('riskLevel', 'status-empty');
+      setStatusClass('cushionValue', 'status-empty');
+      setStatusClass('riskValue', 'status-empty');
+      setHTML('scenarioReview', '');
+    }
+
+    function calculateGoalScenario() {
+      setScenarioSubhead('goal');
+      setGoalLabels();
+      setResultOrder(['concentrationValue', 'recoveryValue', 'scenarioFinal', 'scenarioProfit', 'riskLevel', 'cushionValue', 'riskValue']);
+      showResultRows(3);
+      showReviewCard(false);
+      showGuidance(false);
+      setText('monitoringStatus', L('Целевой расчёт строится по зафиксированному среднемесячному показателю ', 'The goal calculation uses the fixed average monthly rate of ') + pct(strategy.monthlyRatePercent) + '.');
+      const target = value('targetIncome');
+      const required = monitoringRate > 0 ? target / monitoringRate : NaN;
+      setText('concentrationValue', target > 0 ? money(target) : '—');
+      setText('recoveryValue', Number.isFinite(required) && required > 0 ? money(required) : '—');
+      setText('scenarioFinal', pct(strategy.monthlyRatePercent));
+      setText('scenarioProfit', '—');
+      setText('riskLevel', '—');
+      setText('riskValue', '—');
+      setText('cushionValue', '—');
+      setStatusClass('riskLevel', 'status-empty');
+      setStatusClass('cushionValue', 'status-empty');
+      setStatusClass('riskValue', 'status-empty');
+      setHTML('scenarioReview', '');
+    }
+
+    function activeTab() {
+      return (function(el){ return el && el.dataset ? el.dataset.tab : null; })(document.querySelector('.tab.active')) || 'investor';
+    }
+
+    function calculateScenario() {
+      const tab = activeTab();
+      if (tab === 'partner') return calculatePartnerScenario();
+      if (tab === 'goal') return calculateGoalScenario();
+      return calculateInvestorScenario();
+    }
+
+    $$('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        $$('.tab').forEach(item => item.classList.toggle('active', item === tab));
+        $$('.calc-panel').forEach(panel => panel.classList.remove('active'));
+        const panel = document.getElementById(tab.dataset.tab + 'Panel');
+        if (panel) panel.classList.add('active');
+        calculateScenario();
+      });
+    });
+
+    $$('input').forEach(input => input.addEventListener('input', calculateScenario));
+
+    $$('.chips').forEach(group => {
+      group.addEventListener('click', (e) => {
+        const chip = e.target.closest('.chip');
+        if (!chip || chip.dataset.step) return;
+        const target = document.getElementById(group.dataset.target);
+        const raw = chip.textContent.trim().replace('%', '');
+        target.value = raw;
+        Array.from(group.children).forEach(c => c.classList && c.classList.toggle('active', c === chip));
+        target.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+    });
+
+
+
+    Array.prototype.forEach.call(document.querySelectorAll('.language-button'), function(button) {
+      button.addEventListener('click', function() { setLanguage(button.getAttribute('data-language')); });
+    });
+
+    try {
+      var savedLanguage = localStorage.getItem('primeInvestLanguage');
+      currentLanguage = savedLanguage === 'en' ? 'en' : 'ru';
+    } catch (error) { currentLanguage = 'ru'; }
+    applyStaticLanguage();
+    calculateScenario();
+  </script>
+</body>
+</html>
